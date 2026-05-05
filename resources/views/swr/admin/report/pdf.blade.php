@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Secondment Weekly Report - {{ $report->reporting_week }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            border-bottom: 3px solid #1a3a5f;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 20px;
+            color: #1a3a5f;
+            margin-bottom: 5px;
+        }
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 10px;
+        }
+        .meta-item {
+            margin-right: 30px;
+        }
+        .meta-label {
+            font-weight: bold;
+            color: #1a3a5f;
+        }
+        .section {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        .section-title {
+            background: #1a3a5f;
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .section-content {
+            padding: 0 10px;
+            line-height: 1.6;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .info-label {
+            font-weight: bold;
+            width: 30%;
+            color: #1a3a5f;
+        }
+        .info-value {
+            width: 70%;
+            word-wrap: break-word;
+        }
+        .badges {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .badge {
+            display: inline-block;
+            background: #e8eef5;
+            border-left: 3px solid #1a3a5f;
+            padding: 3px 8px;
+            margin-right: 5px;
+            margin-bottom: 3px;
+            font-size: 9px;
+        }
+        .status-approved {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        .status-submitted {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+        .status-rejected {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .wellbeing-good {
+            background: #d4edda;
+            color: #155724;
+        }
+        .wellbeing-moderate {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .wellbeing-challenging {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .footer {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+        }
+        .long-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        td {
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+        .label-cell {
+            background: #f5f5f5;
+            font-weight: bold;
+            width: 30%;
+        }
+        page-break {
+            display: block;
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Secondment Weekly Report</h1>
+            <p>Weekly Submission Report</p>
+        </header>
+
+        <div class="report-meta">
+            <div class="meta-item">
+                <span class="meta-label">Report Week:</span> {{ $report->reporting_week ? format_date($report->reporting_week) : 'N/A' }}
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Submitted:</span> {{ format_date($report->created_at, 'Y-m-d H:i') }}
+            </div>
+            {{-- <div class="meta-item">
+                <span class="meta-label">Status:</span> <span class="badge status-{{ strtolower($report->status) }}">{{ $report->getStatusLabel() }}</span>
+            </div> --}}
+        </div>
+
+        <!-- Basic Information -->
+        <div class="section">
+            <div class="section-title">BASIC INFORMATION</div>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <td class="label-cell">Reporter Name</td>
+                        <td>{{ $report->user?->name ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Role</td>
+                        <td>{{ $report->role ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Venue</td>
+                        <td>{{ $report->venue?->title ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">City</td>
+                        <td>{{ $report->city ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Event</td>
+                        <td>{{ $report->event?->name ?? 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Weekly Activities -->
+        <div class="section">
+            <div class="section-title">WEEKLY ACTIVITIES</div>
+            <div class="section-content">
+                <div class="long-text">{{ $report->main_activities }}</div>
+            </div>
+        </div>
+
+        <!-- Gained Experience -->
+        <div class="section">
+            <div class="section-title">GAINED EXPERIENCE</div>
+            <div class="section-content">
+                <div class="long-text">{{ $report->experience_gained }}</div>
+            </div>
+        </div>
+
+        <!-- Innovation -->
+        <div class="section">
+            <div class="section-title">INNOVATION</div>
+            <div class="section-content">
+                <strong>Description:</strong>
+                <div class="long-text" style="margin-bottom: 10px;">{{ $report->innovation_description }}</div>
+                @if($report->innovationFunctionalAreas->count())
+                    <strong>Functional Areas Impacted:</strong>
+                    <div class="badges">
+                        @foreach($report->innovationFunctionalAreas as $pivot)
+                            <span class="badge">{{ $pivot->functionalArea?->title ?? 'N/A' }}</span>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Challenges -->
+        <div class="section">
+            <div class="section-title">CHALLENGES</div>
+            <div class="section-content">
+                <strong>Description:</strong>
+                <div class="long-text" style="margin-bottom: 10px;">{{ $report->challenges_description }}</div>
+                <table style="width: 200px; margin-bottom: 10px;">
+                    <tr>
+                        <td class="label-cell">Resolved:</td>
+                        <td>{{ $report->challenges_resolved ? 'Yes' : 'No' }}</td>
+                    </tr>
+                </table>
+                @if($report->challengeFunctionalAreas->count())
+                    <strong>Functional Areas Impacted:</strong>
+                    <div class="badges">
+                        @foreach($report->challengeFunctionalAreas as $pivot)
+                            <span class="badge">{{ $pivot->functionalArea?->title ?? 'N/A' }}</span>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Value for Qatar -->
+        @if($report->value_for_qatar)
+            <div class="section">
+                <div class="section-title">VALUE FOR QATAR</div>
+                <div class="section-content">
+                    <table>
+                        <tr>
+                            <td class="label-cell">Type:</td>
+                            <td>{{ $report->value_for_qatar_type }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell" style="vertical-align: top;">Description:</td>
+                            <td>{{ $report->value_for_qatar_description }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        @endif
+
+        <!-- HR / Wellbeing -->
+        <div class="section">
+            <div class="section-title">HR / WELLBEING</div>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <td class="label-cell">Wellbeing Status:</td>
+                        <td>
+                            <span class="badge wellbeing-{{ strtolower($report->wellbeing_status) }}">
+                                {{-- {{ $report->getWellbeingEmoji() }}  --}}
+                                {{ $report->wellbeing_status }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Needs Support:</td>
+                        <td>{{ $report->needs_support ? 'Yes' : 'No' }}</td>
+                    </tr>
+                    @if($report->support_types)
+                        <tr>
+                            <td class="label-cell" style="vertical-align: top;">Support Types:</td>
+                            <td>
+                                <div class="badges">
+                                    @foreach($report->support_types as $type)
+                                        <span class="badge">{{ $type }}</span>
+                                    @endforeach
+                                </div>
+                            </td>
+                        </tr>
+                    @endif
+                    @if($report->additional_comment)
+                        <tr>
+                            <td class="label-cell" style="vertical-align: top;">Additional Comments:</td>
+                            <td>{{ $report->additional_comment }}</td>
+                        </tr>
+                    @endif
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This report was generated on {{ format_date(now(), 'Y-m-d H:i') }}</p>
+            <p>Secondment Weekly Report System</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,657 @@
+@extends('wdr.customer.layout.template')
+
+@section('title', 'Create Secondment Weekly Report')
+
+@section('main')
+
+<link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<style>
+    /* Custom checkbox styling */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 8px;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        padding: 6px 12px;
+        border: 1px solid #d0d0d0;
+        border-radius: 20px;
+        background-color: #f8f8f8;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin: 0;
+        transition: all 0.2s ease;
+        user-select: none;
+        flex: 1;
+    }
+
+    .checkbox-group input[type="checkbox"]:hover + label {
+        border-color: #0066cc;
+        background-color: #f0f7ff;
+    }
+
+    .checkbox-group input[type="checkbox"]:checked + label {
+        background-color: #0066cc;
+        color: white;
+        border-color: #0052a3;
+    }
+
+    .checkbox-group input[type="checkbox"]:checked + label::before {
+        content: '✓';
+        display: inline-block;
+        margin-right: 6px;
+        font-weight: bold;
+    }
+
+    /* Radio button styling */
+    .radio-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .radio-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .radio-item input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .radio-item label {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        border: 1px solid #d0d0d0;
+        border-radius: 20px;
+        background-color: #f8f8f8;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin: 0;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+
+    .radio-item input[type="radio"]:hover + label {
+        border-color: #0066cc;
+        background-color: #f0f7ff;
+    }
+
+    .radio-item input[type="radio"]:checked + label {
+        background-color: #0066cc;
+        color: white;
+        border-color: #0052a3;
+    }
+
+    /* Flatpickr styling
+    .flatpickr-input {
+        width: 100%;
+        padding: 10px 12px !important;
+        border: 1px solid #d0d0d0 !important;
+        border-radius: 4px !important;
+        font-size: 0.95rem !important;
+        background-color: #fff !important;
+    }
+
+    .flatpickr-input:focus {
+        border-color: #0066cc !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25) !important;
+        outline: 0 !important;
+    }
+
+    .flatpickr-calendar {
+        margin-top: 6px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        font-family: inherit;
+        z-index: 99999 !important;
+    }
+
+    .flatpickr-calendar.open {
+        z-index: 1050;
+    }
+
+    .flatpickr-months {
+        background: #fafafa;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .flatpickr-month {
+        text-align: center;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+        color: #0066cc;
+        line-height: 1;
+        padding: 0 10px;
+        text-decoration: none;
+    }
+
+    .flatpickr-prev-month:hover,
+    .flatpickr-next-month:hover {
+        color: #0052a3;
+    }
+
+    .flatpickr-day {
+        color: #333;
+        border-radius: 4px;
+        max-width: calc(100% - 6px);
+        margin: 3px;
+        height: 36px;
+        line-height: 36px;
+    }
+
+    .flatpickr-day.selected {
+        background-color: #0066cc;
+        border-color: #0066cc;
+        color: white;
+        font-weight: 600;
+    }
+
+    .flatpickr-day:hover {
+        background-color: #f0f7ff;
+        border-color: #0066cc;
+        cursor: pointer;
+    }
+
+    .flatpickr-day.today {
+        border-color: #0066cc;
+        color: #0066cc;
+        font-weight: 600;
+    }
+
+    .flatpickr-day.disabled {
+        color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .flatpickr-weekday {
+        background: #f0f0f0;
+        color: #666;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 8px 0;
+    }
+
+    .flatpickr-time input {
+        border-color: #d0d0d0;
+        padding: 6px 8px;
+        border-radius: 4px;
+    }
+
+    .flatpickr-time input:focus {
+        border-color: #0066cc;
+    }
+
+    /* Wrapper styling */
+    /* .flatpickr-wrapper {
+        width: 100%;
+        position: relative;
+    } */
+
+    /* Ensure proper spacing */
+    /* .form-group .flatpickr-input {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }  */
+</style>
+
+<main id="mainContent" class="main-content" style="display: block">
+    <div id="createPage" class="page-content" style="display: block">
+        <div class="page-header">
+            <h2>Create Secondment Weekly Report</h2>
+            <a href="{{ route('swr.report') }}"><button class="btn btn-subtle-primary px-3 px-sm-5 me-2"><span class="fa-solid fa-arrow-left me-sm-2"></span><span class="d-none d-sm-inline">Back</span></button></a>
+        </div>
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form id="swrForm" class="report-form needs-validation" action="{{ route('swr.report.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+            @csrf
+
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3>Basic Information</h3>
+                <div class="form-row">
+                            <x-formy.form_date_input class="col-sm-12 col-md-12  mb-3" inputType="text" floating='0'
+                            inputValue="" name="report_date" elementId="edit_report_date" label="Report Date"
+                            required="required" disabled="" inputValue="{{ old('report_date') }}"/>
+
+                    <div class="form-group col-sm-12 col-md-6 mb-3">
+                        <label class="mb-1" for="reporting_week">Reporting Week <span class="text-danger">*</span></label>
+                        <div class="flatpickr-wrapper" style="position: relative;">
+                            <input type="text" class="form-control @error('reporting_week') is-invalid @enderror" id="reporting_week" name="reporting_week" placeholder="Select a date" required value="{{ old('reporting_week') }}">
+                        </div>
+                        @error('reporting_week')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="form-group col-sm-12 col-md-6 mb-3">
+                        <label class="mb-1" for="event_id">Event <span class="text-danger">*</span></label>
+                        <select class="form-control @error('event_id') is-invalid @enderror" id="event_id" name="event_id" required>
+                            <option value="">-- Select Event --</option>
+                            <option value="{{ $event->id }}" selected>{{ $event->name }}</option>
+                        </select>
+                        @error('event_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-sm-12 col-md-6 mb-3">
+                        <label class="mb-1" for="venue_id">Venue <span class="text-danger">*</span></label>
+                        <select class="form-control @error('venue_id') is-invalid @enderror" id="venue_id" name="venue_id" required>
+                            <option value="">-- Select Venue --</option>
+                            @foreach($venues as $venue)
+                                <option value="{{ $venue->id }}" {{ old('venue_id') == $venue->id ? 'selected' : '' }}>{{ $venue->title }} ({{ $venue->city ?? 'N/A' }})</option>
+                            @endforeach
+                        </select>
+                        @error('venue_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="form-group col-sm-12 col-md-6 mb-3">
+                        <label class="mb-1" for="name">Name (Auto-filled)</label>
+                        <input type="text" class="form-control" id="name" name="name" readonly value="{{ $user->name }}">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-sm-12 col-md-6 mb-3">
+                        <label class="mb-1" for="role">Role</label>
+                        <input type="text" class="form-control" id="role" name="role" value="{{ old('role') }}" placeholder="Enter your role">
+                    </div>
+
+                    <div class="form-group col-sm-12 col-md-6 mb-3">
+                        <label class="mb-1" for="city">City</label>
+                        <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}" placeholder="City">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Activities -->
+            <div class="form-section">
+                <h3>Weekly Activities</h3>
+                <div class="form-group">
+                    <label class="mb-1" for="main_activities">What were your main activities and responsibilities this week? <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('main_activities') is-invalid @enderror" id="main_activities" name="main_activities" rows="4" required placeholder="Describe your main activities...">{{ old('main_activities') }}</textarea>
+                    <small class="text-muted">Free text (mandatory)</small>
+                    @error('main_activities')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                </div>
+            </div>
+
+            <!-- Gained Experience -->
+            <div class="form-section">
+                <h3>Gained Experience</h3>
+                <div class="form-group">
+                    <label class="mb-1" for="experience_gained">What experience did you gain this week? <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('experience_gained') is-invalid @enderror" id="experience_gained" name="experience_gained" rows="4" required placeholder="Describe your learning...">{{ old('experience_gained') }}</textarea>
+                    <small class="text-muted">Free text (mandatory)</small>
+                    @error('experience_gained')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                </div>
+            </div>
+
+            <!-- Innovation Section -->
+            <div class="form-section">
+                <h3>Innovation</h3>
+                <div class="form-group">
+                    <label class="mb-1" for="innovation_description">Innovation observed this week <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('innovation_description') is-invalid @enderror" id="innovation_description" name="innovation_description" rows="3" required placeholder="Describe any innovations...">{{ old('innovation_description') }}</textarea>
+                    <small class="text-muted">Short description (Free text – mandatory)</small>
+                    @error('innovation_description')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="form-group">
+                    <label class="mb-1">Functional Area(s) impacted (Multi-select)</label>
+                    <div class="checkbox-grid">
+                        @foreach($functionalAreas as $key => $area)
+                            <div class="checkbox-group">
+                                <input class="innovation-area-check" type="checkbox" id="innovation_area_{{ $loop->index }}" name="innovation_functional_areas[]" value="{{ $area }}" {{ in_array($area, old('innovation_functional_areas', [])) ? 'checked' : '' }}>
+                                <label for="innovation_area_{{ $loop->index }}">{{ $area }}</label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="form-group" id="innovation_other_container" style="display:none;">
+                    <label class="mb-1" for="innovation_other_area">Please specify other area</label>
+                    <input type="text" class="form-control" id="innovation_other_area" name="innovation_other_area" value="{{ old('innovation_other_area') }}">
+                </div>
+            </div>
+
+            <!-- Challenges Section -->
+            <div class="form-section">
+                <h3>Challenges</h3>
+                <div class="form-group">
+                    <label class="mb-1" for="challenges_description">Challenges faced this week <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('challenges_description') is-invalid @enderror" id="challenges_description" name="challenges_description" rows="3" required placeholder="Describe any challenges...">{{ old('challenges_description') }}</textarea>
+                    <small class="text-muted">Short description (Free text – mandatory)</small>
+                    @error('challenges_description')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="form-group">
+                    <label class="mb-1">Was it resolved? <span class="text-danger">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="challenges_resolved" id="challenges_resolved_yes" value="yes" {{ old('challenges_resolved') == 'yes' ? 'checked' : '' }} required>
+                            <label for="challenges_resolved_yes">Yes</label>
+                        </div>
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="challenges_resolved" id="challenges_resolved_no" value="no" {{ old('challenges_resolved') == 'no' ? 'checked' : '' }} required>
+                            <label for="challenges_resolved_no">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="mb-1">Functional Area(s) impacted (Multi-select)</label>
+                    <div class="checkbox-grid">
+                        @foreach($functionalAreas as $key => $area)
+                            <div class="checkbox-group">
+                                <input class="challenges-area-check" type="checkbox" id="challenges_area_{{ $loop->index }}" name="challenges_functional_areas[]" value="{{ $area }}" {{ in_array($area, old('challenges_functional_areas', [])) ? 'checked' : '' }}>
+                                <label for="challenges_area_{{ $loop->index }}">{{ $area }}</label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="form-group" id="challenges_other_container" style="display:none;">
+                    <label class="mb-1" for="challenges_other_area">Please specify other area</label>
+                    <input type="text" class="form-control" id="challenges_other_area" name="challenges_other_area" value="{{ old('challenges_other_area') }}">
+                </div>
+            </div>
+
+            <!-- Attach Photos -->
+            <div class="form-section">
+                <h3>Attach Photos</h3>
+                <div class="form-group">
+                    <label for="photoUpload">Photo Uploads (Max 10 MB)</label>
+                    <div class="photo-upload-area" id="photoUploadArea">
+                        <input type="file" id="photoUpload" name="photos[]" multiple accept="image/*" />
+                        <div class="upload-placeholder">
+                            <span class="material-icons">cloud_upload</span>
+                            <p>Click to upload photos or drag and drop</p>
+                            <span>Support for multiple photos - Max 10MB per file</span>
+                        </div>
+                    </div>
+                    <div id="photoPreview" class="photo-preview"></div>
+                </div>
+            </div>
+
+            <!-- Value for Qatar -->
+            <div class="form-section">
+                <h3>Value for Qatar</h3>
+                <div class="form-group">
+                    <label class="mb-1">Did you see anything this week that should be applied for future events in Qatar? <span class="text-danger">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="value_for_qatar" id="value_for_qatar_yes" value="yes" {{ old('value_for_qatar') == 'yes' ? 'checked' : '' }} required>
+                            <label for="value_for_qatar_yes">Yes</label>
+                        </div>
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="value_for_qatar" id="value_for_qatar_no" value="no" {{ old('value_for_qatar') == 'no' ? 'checked' : '' }} required>
+                            <label for="value_for_qatar_no">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="value_qatar_conditional" style="display:none;">
+                    <div class="form-group">
+                        <label class="mb-1">Type (Single select)</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input class="form-check-input" type="radio" name="value_for_qatar_type" id="value_must_have" value="Must Have" {{ old('value_for_qatar_type') == 'Must Have' ? 'checked' : '' }}>
+                                <label for="value_must_have">Must Have</label>
+                            </div>
+                            <div class="radio-item">
+                                <input class="form-check-input" type="radio" name="value_for_qatar_type" id="value_good_have" value="Good to Have" {{ old('value_for_qatar_type') == 'Good to Have' ? 'checked' : '' }}>
+                                <label for="value_good_have">Good to Have</label>
+                            </div>
+                            <div class="radio-item">
+                                <input class="form-check-input" type="radio" name="value_for_qatar_type" id="value_further" value="Requires further assessment" {{ old('value_for_qatar_type') == 'Requires further assessment' ? 'checked' : '' }}>
+                                <label for="value_further">Further assessment</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="mb-1" for="value_for_qatar_description">Short description</label>
+                        <textarea class="form-control" id="value_for_qatar_description" name="value_for_qatar_description" rows="3" placeholder="Provide details...">{{ old('value_for_qatar_description') }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HR / Wellbeing -->
+            <div class="form-section">
+                <h3>HR / Wellbeing</h3>
+                <div class="form-group">
+                    <label class="mb-1">How is your wellbeing this week? <span class="text-danger">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="wellbeing_status" id="wellbeing_good" value="Good" {{ old('wellbeing_status') == 'Good' ? 'checked' : '' }} required>
+                            <label for="wellbeing_good">😊 Good</label>
+                        </div>
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="wellbeing_status" id="wellbeing_moderate" value="Moderate" {{ old('wellbeing_status') == 'Moderate' ? 'checked' : '' }} required>
+                            <label for="wellbeing_moderate">😐 Moderate</label>
+                        </div>
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="wellbeing_status" id="wellbeing_challenging" value="Challenging" {{ old('wellbeing_status') == 'Challenging' ? 'checked' : '' }} required>
+                            <label for="wellbeing_challenging">😟 Challenging</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="mb-1">Do you need support? <span class="text-danger">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="needs_support" id="needs_support_yes" value="yes" {{ old('needs_support') == 'yes' ? 'checked' : '' }} required>
+                            <label for="needs_support_yes">Yes</label>
+                        </div>
+                        <div class="radio-item">
+                            <input class="form-check-input" type="radio" name="needs_support" id="needs_support_no" value="no" {{ old('needs_support') == 'no' ? 'checked' : '' }} required>
+                            <label for="needs_support_no">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="support_types_container" style="display:none;">
+                    <div class="form-group">
+                        <label class="mb-1">Support Types (Multi-select)</label>
+                        <div class="checkbox-grid">
+                            @foreach($supportTypes as $key => $type)
+                                <div class="checkbox-group">
+                                    <input class="support-type-check" type="checkbox" id="support_type_{{ $loop->index }}" name="support_types[]" value="{{ $type }}" {{ in_array($type, old('support_types', [])) ? 'checked' : '' }}>
+                                    <label for="support_type_{{ $loop->index }}">{{ $type }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="support_other_container" style="display:none;">
+                        <label class="mb-1" for="support_other_description">Please specify other support needed</label>
+                        <input type="text" class="form-control" id="support_other_description" name="support_other_description" value="{{ old('support_other_description') }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="mb-1" for="additional_comment">Additional comment (optional)</label>
+                    <textarea class="form-control" id="additional_comment" name="additional_comment" rows="3" placeholder="Any additional comments...">{{ old('additional_comment') }}</textarea>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="secondary-btn" id="cancelReport">
+                    Cancel
+                </button>
+                <button type="submit" class="primary-btn">
+                    <span class="fa-solid fa-check me-2"></span>
+                    Submit Report
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Flatpickr date picker
+    flatpickr('#reporting_week', {
+        mode: 'single',
+        dateFormat: 'Y-m-d',
+        allowInput: true,
+        closeOnSelect: true,
+        static: false,
+        wrap: false,
+        animate: true
+    });
+
+    // Cancel button
+    document.getElementById('cancelReport').addEventListener('click', function() {
+        window.location.href = '{{ route('swr.report') }}';
+    });
+
+    // Show/hide innovation other field
+    document.querySelectorAll('.innovation-area-check').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const hasOther = document.querySelector('.innovation-area-check[value*="Other"]:checked');
+            document.getElementById('innovation_other_container').style.display = hasOther ? 'block' : 'none';
+        });
+    });
+
+    // Show/hide challenges other field
+    document.querySelectorAll('.challenges-area-check').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const hasOther = document.querySelector('.challenges-area-check[value*="Other"]:checked');
+            document.getElementById('challenges_other_container').style.display = hasOther ? 'block' : 'none';
+        });
+    });
+
+    // Show/hide value for qatar conditional fields
+    document.querySelectorAll('input[name="value_for_qatar"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.getElementById('value_qatar_conditional').style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+    });
+
+    // Show/hide support types
+    document.querySelectorAll('input[name="needs_support"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.getElementById('support_types_container').style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+    });
+
+    // Show/hide support other field
+    document.querySelectorAll('.support-type-check').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const hasOther = document.querySelector('.support-type-check[value*="Other"]:checked');
+            document.getElementById('support_other_container').style.display = hasOther ? 'block' : 'none';
+        });
+    });
+
+    // Trigger initial display state
+    const valueQatarYes = document.getElementById('value_for_qatar_yes');
+    if (valueQatarYes && valueQatarYes.checked) {
+        document.getElementById('value_qatar_conditional').style.display = 'block';
+    }
+
+    const needsSupportYes = document.getElementById('needs_support_yes');
+    if (needsSupportYes && needsSupportYes.checked) {
+        document.getElementById('support_types_container').style.display = 'block';
+    }
+});
+
+// Photo upload handling
+const input = document.getElementById('photoUpload');
+const preview = document.getElementById('photoPreview');
+let selectedFiles = [];
+
+input.addEventListener('change', () => {
+    const newFiles = Array.from(input.files);
+    newFiles.forEach(f => {
+        const exists = selectedFiles.some(x =>
+            x.name === f.name &&
+            x.size === f.size &&
+            x.lastModified === f.lastModified
+        );
+        if (!exists) selectedFiles.push(f);
+    });
+
+    syncInputFiles();
+    renderPreviews();
+});
+
+function syncInputFiles() {
+    const dt = new DataTransfer();
+    selectedFiles.forEach(file => dt.items.add(file));
+    input.files = dt.files;
+}
+
+function renderPreviews() {
+    preview.innerHTML = '';
+
+    selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'preview-item';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'preview-img';
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'photo-remove';
+            btn.innerHTML = '&times;';
+            btn.onclick = () => removeFile(index);
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(btn);
+            preview.appendChild(wrapper);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    syncInputFiles();
+    renderPreviews();
+}
+</script>
+
+@endsection
