@@ -26,8 +26,8 @@
                             <div class="col-sm-6 col-md-4 col-lg-3">
                                 <div class="card h-100">
                                     <div class="card-body p-0">
-                                        <a href="{{ asset('storage/' . $doc->file_path) }}" data-gallery="gallery" class="glightbox">
-                                            <img src="{{ asset('storage/' . $doc->file_path) }}" class="img-fluid rounded-top" alt="{{ $doc->original_name }}" style="height: 200px; object-fit: cover;">
+                                        <a href="{{ route('swr.docs.view.ext', ['document' => $doc->id, 'ext' => pathinfo($doc->file_name, PATHINFO_EXTENSION)]) }}" data-gallery="gallery" class="glightbox">
+                                            <img src="{{ route('swr.docs.view.ext', ['document' => $doc->id, 'ext' => pathinfo($doc->file_name, PATHINFO_EXTENSION)]) }}" class="img-fluid rounded-top" alt="{{ $doc->original_name }}" style="height: 200px; object-fit: cover;">
                                         </a>
                                     </div>
                                     <div class="card-footer">

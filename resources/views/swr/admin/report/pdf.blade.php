@@ -307,6 +307,37 @@
             </div>
         </div>
 
+        <!-- Photos Section -->
+        @if ($report->documents && $report->documents->isNotEmpty())
+            <div class="section">
+                <h2>Attached Photos</h2>
+                <div class="table-wrapper">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            @foreach ($report->documents as $i => $doc)
+                                @php
+                                    $img = private_image_base64($doc->disk, $doc->file_path);
+                                @endphp
+
+                                @if ($img)
+                                    <td style="width: 33.33%; text-align: center; vertical-align: top; padding: 8px;">
+                                        <img src="{{ $img }}" style="width: 100%; max-width: 180px; height: auto; border: 1px solid #e5e7eb; padding: 4px; background: #fff;">
+                                        <div style="font-size: 9px; margin-top: 4px; color: #6b7280;">
+                                            {{ $doc->description ?? $doc->original_name }}
+                                        </div>
+                                    </td>
+                                @endif
+
+                                @if (($i + 1) % 3 === 0 && ($i + 1) < $report->documents->count())
+                                    </tr><tr>
+                                @endif
+                            @endforeach
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        @endif
+
         <div class="footer">
             <p>This report was generated on {{ format_date(now(), 'Y-m-d H:i') }}</p>
             <p>Secondment Weekly Report System</p>

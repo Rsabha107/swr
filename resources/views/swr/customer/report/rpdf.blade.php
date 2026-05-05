@@ -1,452 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>{{ $wdr->reference_number }}</title>
-
-    <!-- Favicon -->
-    <link rel="icon" href="./images/favicon.png" type="image/x-icon" />
-
-    <!-- Invoice styling -->
+    <title>Secondment Weekly Report - {{ $report->reporting_week }}</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
-            text-align: center;
-            color: #777;
-        }
-
-        .invoice-box table tr td h4 {
-            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
-            text-align: center;
-            color: #777;
-        }
-
-        /* body h1 {
-            font-weight: 300;
-            margin-bottom: 0px;
-            padding-bottom: 0px;
-            color: #000;
-        } */
-        body h1 {
-            font-size: 16;
-            margin-bottom: 0px;
-            padding-bottom: 0px;
-            color: #000;
-        }
-
-        body h3 {
-            font-weight: 300;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            font-style: italic;
-            color: #555;
-        }
-
-        body a {
-            color: #06f;
-        }
-
-        .invoice-box {
-            max-width: 1000px;
-            margin: auto;
-            padding: 30px;
-            border: 1px solid #eee;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-            font-size: 16px;
-            line-height: 24px;
-            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
-            color: #555;
-        }
-
-        .invoice-box table {
-            width: 100%;
-            line-height: inherit;
-            text-align: left;
-            border-collapse: collapse;
-        }
-
-        .invoice-box table td {
-            padding: 5px;
-            vertical-align: top;
-        }
-
-        .invoice-box table tr td:nth-child(2) {
-            text-align: right;
-        }
-
-        .invoice-box table tr.top table td {
-            padding-bottom: 20px;
-        }
-
-        .invoice-box table tr.top table td.title {
-            font-size: 45px;
-            line-height: 30px;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
             color: #333;
         }
-
-        .invoice-box table tr.information table td {
-            padding-bottom: 40px;
+        .container {
+            width: 100%;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
         }
-
-        .invoice-box table tr.heading td {
-            background: #eee;
-            border-bottom: 1px solid #ddd;
+        header {
+            text-align: center;
+            border-bottom: 3px solid #1a3a5f;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 20px;
+            color: #1a3a5f;
+            margin-bottom: 5px;
+        }
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 10px;
+        }
+        .meta-item {
+            margin-right: 30px;
+        }
+        .meta-label {
             font-weight: bold;
+            color: #1a3a5f;
         }
-
-        .invoice-box table tr.details td {
-            padding-bottom: 20px;
+        .section {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
         }
-
-        .invoice-box table tr.item td {
-            border-bottom: 1px solid #eee;
-        }
-
-        .invoice-box table tr.item.last td {
-            border-bottom: none;
-        }
-
-        .invoice-box table tr.total td:nth-child(2) {
-            border-top: 2px solid #eee;
+        .section-title {
+            background: #1a3a5f;
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
             font-weight: bold;
+            margin-bottom: 10px;
         }
-
-        @media only screen and (max-width: 600px) {
-            .invoice-box table tr.top table td {
-                width: 100%;
-                display: block;
-                text-align: center;
-            }
-
-            .invoice-box table tr.information table td {
-                width: 100%;
-                display: block;
-                text-align: center;
-            }
+        .section-content {
+            padding: 0 10px;
+            line-height: 1.6;
         }
-
-        /** RTL **/
-        .invoice-box.rtl {
-            direction: rtl;
-            font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
         }
-
-        .invoice-box.rtl table {
-            text-align: right;
+        .info-label {
+            font-weight: bold;
+            width: 30%;
+            color: #1a3a5f;
         }
-
-        .invoice-box.rtl table tr td:nth-child(2) {
-            text-align: left;
+        .info-value {
+            width: 70%;
+            word-wrap: break-word;
         }
-
-        .centered-table th,
-        .centered-table td {
-            text-align: center !important;
+        .badges {
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
-
-        @media print {
-            .invoice-box {
-                max-width: unset;
-                box-shadow: none;
-                border: 0px;
-            }
+        .badge {
+            display: inline-block;
+            background: #e8eef5;
+            border-left: 3px solid #1a3a5f;
+            padding: 3px 8px;
+            margin-right: 5px;
+            margin-bottom: 3px;
+            font-size: 9px;
+        }
+        .status-approved {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        .status-submitted {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+        .status-rejected {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .wellbeing-good {
+            background: #d4edda;
+            color: #155724;
+        }
+        .wellbeing-moderate {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .wellbeing-challenging {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .footer {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+        }
+        .long-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        td {
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+        .label-cell {
+            background: #f5f5f5;
+            font-weight: bold;
+            width: 30%;
+        }
+        page-break {
+            display: block;
+            page-break-after: always;
         }
     </style>
 </head>
-
 <body>
-    <!-- <h1>A simple, clean, and responsive HTML invoice template</h1>
-    <h3>Because sometimes, all you need is something simple.</h3>
-    Find the code on <a href="https://github.com/sparksuite/simple-html-invoice-template">GitHub</a>. Licensed under the
-    <a href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>.<br /><br /><br /> -->
+    <div class="container">
+        <header>
+            <h1>Secondment Weekly Report</h1>
+            <p>Weekly Submission Report</p>
+        </header>
 
-    {{-- @php
-    $destination = $booking->rsp->latitude . ',' . $booking->rsp->longitude;
-    @endphp --}}
+        <div class="report-meta">
+            <div class="meta-item">
+                <span class="meta-label">Report Week:</span> {{ $report->reporting_week ? format_date($report->reporting_week) : 'N/A' }}
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Submitted:</span> {{ format_date($report->created_at, 'Y-m-d H:i') }}
+            </div>
+            {{-- <div class="meta-item">
+                <span class="meta-label">Status:</span> <span class="badge status-{{ strtolower($report->status) }}">{{ $report->getStatusLabel() }}</span>
+            </div> --}}
+        </div>
 
-    <div class="invoice-box">
-        <table>
-            <tr class="top">
-                <td colspan="2">
+        <!-- Basic Information -->
+        <div class="section">
+            <div class="section-title">BASIC INFORMATION</div>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <td class="label-cell">Reporter Name</td>
+                        <td>{{ $report->user?->name ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Role</td>
+                        <td>{{ $report->role ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Venue</td>
+                        <td>{{ $report->venue?->title ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">City</td>
+                        <td>{{ $report->city ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Event</td>
+                        <td>{{ $report->event?->name ?? 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Weekly Activities -->
+        <div class="section">
+            <div class="section-title">WEEKLY ACTIVITIES</div>
+            <div class="section-content">
+                <div class="long-text">{{ $report->main_activities }}</div>
+            </div>
+        </div>
+
+        <!-- Gained Experience -->
+        <div class="section">
+            <div class="section-title">GAINED EXPERIENCE</div>
+            <div class="section-content">
+                <div class="long-text">{{ $report->experience_gained }}</div>
+            </div>
+        </div>
+
+        <!-- Innovation -->
+        <div class="section">
+            <div class="section-title">INNOVATION</div>
+            <div class="section-content">
+                <strong>Description:</strong>
+                <div class="long-text" style="margin-bottom: 10px;">{{ $report->innovation_description }}</div>
+                @if($report->innovationFunctionalAreas->count())
+                    <strong>Functional Areas Impacted:</strong>
+                    <div class="badges">
+                        @foreach($report->innovationFunctionalAreas as $pivot)
+                            <span class="badge">{{ $pivot->functionalArea?->title ?? 'N/A' }}</span>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Challenges -->
+        <div class="section">
+            <div class="section-title">CHALLENGES</div>
+            <div class="section-content">
+                <strong>Description:</strong>
+                <div class="long-text" style="margin-bottom: 10px;">{{ $report->challenges_description }}</div>
+                <table style="width: 200px; margin-bottom: 10px;">
+                    <tr>
+                        <td class="label-cell">Resolved:</td>
+                        <td>{{ $report->challenges_resolved ? 'Yes' : 'No' }}</td>
+                    </tr>
+                </table>
+                @if($report->challengeFunctionalAreas->count())
+                    <strong>Functional Areas Impacted:</strong>
+                    <div class="badges">
+                        @foreach($report->challengeFunctionalAreas as $pivot)
+                            <span class="badge">{{ $pivot->functionalArea?->title ?? 'N/A' }}</span>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Value for Qatar -->
+        @if($report->value_for_qatar)
+            <div class="section">
+                <div class="section-title">VALUE FOR QATAR</div>
+                <div class="section-content">
                     <table>
                         <tr>
-                            <td class="title">
-                                <img src="{{ public_path('assets/img/logos/sc_logo_gray_blue.png') }}"
-                                    alt="Company logo" style="width: 120%; max-width: 150px" />
-                            </td>
-                            {{-- <td class="">
-                                <h4 class="centertext">Workforce Daily Report (WDR)
-                                    <br>WDR Ref: <b>{{ $wdr->reference_number }}</b>
-                                    <br>Event: <b>{{ $wdr->event?->name }}</b>
-                                    <br>Venue: <b>{{ $wdr->venue?->title }}</b>
-                                </h4>
-                            </td> --}}
-                            {{-- <td class="title">
-                                <!-- <p class="mb-0 ms-3 text-900 zoom"> {{ $qr_code }}</p> -->
-                                <img src="data:image/png;base64, {{ $qr_code }}">
-                                <!-- <img src="{{ public_path('assets/img/gallery/Qrcode_wikipedia.jpg') }}" alt="Company logo" style="width: 100%; max-width: 100px" /> -->
-                            </td> --}}
-
-                            <!-- <td>
-                                Invoice #: 123<br />
-                                Created: January 1, 2023<br />
-                                Due: February 1, 2023
-                            </td> -->
+                            <td class="label-cell">Type:</td>
+                            <td>{{ $report->value_for_qatar_type }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell" style="vertical-align: top;">Description:</td>
+                            <td>{{ $report->value_for_qatar_description }}</td>
                         </tr>
                     </table>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <h4 class="centertext">Workforce Daily Report (WDR)
-                        <br>WDR Ref: <b>{{ $wdr->reference_number }}</b>
-                        <br>Event: <b>{{ $wdr->event?->name }}</b>
-                        <br>Venue: <b>{{ $wdr->venue?->title }}</b>
-                    </h4>
-                </td>
-            </tr>
-            <tr class="heading">
-                <td colspan="2">WDR Details</td>
-                <!-- <td>Price</td> -->
-            </tr>
+                </div>
+            </div>
+        @endif
 
-            <tr class="item">
-                <td>Event</td>
-                <td>{{ $wdr->event?->name }}</td>
-            </tr>
-            <tr class="item">
-                <td>Venue Name:</td>
-                <td>{{ $wdr->venue?->title }}</td>
-            </tr>
-            <tr class="item">
-                <td>WDR Date:</td>
-                <td>{{ $wdr->report_date }}</td>
-            </tr>
-            <tr class="item">
-                <td>Day Type:</td>
-                <td>{{ $wdr->dayType->title }}</td>
-            </tr>
-            {{-- <tr class="item">
-                <td>RSP:</td>
-                <td><a href="https://www.google.com/maps/dir/?api=1&destination={{ $destination }}" target="_blank"
-                        class="btn btn-primary">{{ $booking->schedule->rsp->title }}</a></td>
-            </tr> --}}
-            {{-- <tr class="item">
-                <td>RSP Arrival Date:</td>
-                <td>{{ $rsp_arrival_date }}</td>
-            </tr>
-            <tr class="item">
-                <td>RSP Arrival Time:</td>
-                <td>{{ time_range_segment($booking->schedule?->rsp_booking_slot, 'from') }}</td>
-            </tr> --}}
-            <tr class="item">
-                <td>Reporeted By :</td>
-                <td>{{ $wdr->reportedBy->name }}</td>
-            </tr>
-        </table>
-        {{-- list demand of the day, attended, % in a table --}}
-        <table class="centered-table" width="100%" cellspacing="0" cellpadding="6"
-            style="border-collapse:collapse;margin-top:16px;">
-            <colgroup>
-                <col width="33.33%">
-                <col width="33.33%">
-                <col width="33.33%">
-            </colgroup>
-
-            <thead>
-                <tr style="background:#f3f4f6; font-weight:700;">
-                    <th>Demand of the Day</th>
-                    <th>Attended</th>
-                    <th>Percentage (%)</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td>{{ $wdr->demand_of_day }}</td>
-                    <td>{{ $wdr->attended }}</td>
-                    <td style="font-weight:700;">{{ $wdr->attendance_percentage }}%</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="centered-table" width="100%" cellspacing="0" cellpadding="6"
-            style="border-collapse:collapse;margin-top:16px;">
-            <colgroup>
-                <col width="33.33%">
-                <col width="33.33%">
-                <col width="33.33%">
-            </colgroup>
-
-            <thead>
-                <tr style="background:#f3f4f6; font-weight:700;">
-                    <th>Meals Ordered (Volunteers)</th>
-                    <th>Meals Redeemed (Volunteers)</th>
-                    <th>Percentage (%)</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td>{{ $wdr->meals_ordered_volunteers }}</td>
-                    <td>{{ $wdr->meals_redeemed_volunteers }}</td>
-                    <td style="font-weight:700;">{{ $wdr->volunteer_meal_percentage }}%</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="centered-table" width="100%" cellspacing="0" cellpadding="6"
-            style="border-collapse:collapse;margin-top:16px;">
-            <colgroup>
-                <col width="33.33%">
-                <col width="33.33%">
-                <col width="33.33%">
-            </colgroup>
-
-            <thead>
-                <tr style="background:#f3f4f6; font-weight:700;">
-                    <th>Meals Ordered (Staff)</th>
-                    <th>Meals Redeemed (Staff)</th>
-                    <th>Percentage (%)</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td>{{ $wdr->meals_ordered_staff }}</td>
-                    <td>{{ $wdr->meals_redeemed_staff }}</td>
-                    <td style="font-weight:700;">{{ $wdr->staff_meal_percentage }}%</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <table>
-            <tr>
-
-
-                {{-- Incidents / Issues (bottom section) --}}
-                <td colspan="2" style="padding-top:12px; page-break-inside:avoid;">
-                    <div style="margin-top: 18px;">
-                        <div
-                            style="
-                            background: #f3f4f6;
-                            border: 1px solid #e5e7eb;
-                            padding: 8px 10px;
-                            font-weight: 700;
-                            font-size: 13px;
-                            text-transform: uppercase;
-                            letter-spacing: .3px;
-                        ">
-                            Incidents / Issues
-                        </div>
-
-                        <div
-                            style="
-                            border: 1px solid #e5e7eb;
-                            border-top: 0;
-                            padding: 12px 10px;
-                            min-height: 90px;
-                            font-size: 12.5px;
-                            line-height: 1.6;
-                            color: #111827;
-                            background: #ffffff;
-                            white-space: pre-line;
-                        ">
-                            {{ filled($wdr->incidents) ? $wdr->incidents : 'No incidents reported.' }}
-                        </div>
-                    </div>
-                    <div style="margin-top: 14px;">
-                        <div
-                            style="
-                            background: #f3f4f6;
-                            border: 1px solid #e5e7eb;
-                            padding: 8px 10px;
-                            font-weight: 700;
-                            font-size: 13px;
-                            text-transform: uppercase;
-                            letter-spacing: .3px;
-                        ">
-                            Other Notes
-                        </div>
-
-                        <div
-                            style="
-                            border: 1px solid #e5e7eb;
-                            border-top: 0;
-                            padding: 12px 10px;
-                            min-height: 70px;
-                            font-size: 12.5px;
-                            line-height: 1.6;
-                            color: #111827;
-                            background: #ffffff;
-                            white-space: pre-line;
-                        ">
-                            {{ filled($wdr->other_notes) ? $wdr->other_notes : 'No additional notes.' }}
-                        </div>
-                    </div>
-                    {{-- Images --}}
-@if($wdr->photos && $wdr->photos->isNotEmpty())
-    <div style="margin-top: 16px; page-break-inside: avoid;">
-        <div
-            style="
-                background: #f3f4f6;
-                border: 1px solid #e5e7eb;
-                padding: 8px 10px;
-                font-weight: 700;
-                font-size: 13px;
-                text-transform: uppercase;
-                letter-spacing: .3px;
-            ">
-            Incident Images
-        </div>
-
-        <div
-            style="
-                border: 1px solid #e5e7eb;
-                border-top: 0;
-                padding: 10px;
-                background: #ffffff;
-            ">
-            <table width="100%" cellspacing="6" cellpadding="0" style="border-collapse: collapse;">
-                <tr>
-                    @foreach($wdr->photos as $i => $doc)
-                        @php
-                            $img = private_image_base64($doc->disk, $doc->path);
-                        @endphp
-
-                        @if($img)
-                            <td width="33.33%"
-                                style="text-align:center; vertical-align:top; page-break-inside:avoid;">
-                                <img src="{{ $img }}"
-                                     style="
-                                        width:100%;
-                                        max-width:180px;
-                                        height:auto;
-                                        border:1px solid #e5e7eb;
-                                        padding:4px;
-                                        background:#fff;
-                                     ">
-                                <div style="font-size:10px; margin-top:4px; color:#6b7280;">
-                                    {{ $doc->original_name }}
+        <!-- HR / Wellbeing -->
+        <div class="section">
+            <div class="section-title">HR / WELLBEING</div>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <td class="label-cell">Wellbeing Status:</td>
+                        <td>
+                            <span class="badge wellbeing-{{ strtolower($report->wellbeing_status) }}">
+                                {{-- {{ $report->getWellbeingEmoji() }}  --}}
+                                {{ $report->wellbeing_status }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Needs Support:</td>
+                        <td>{{ $report->needs_support ? 'Yes' : 'No' }}</td>
+                    </tr>
+                    @if($report->support_types)
+                        <tr>
+                            <td class="label-cell" style="vertical-align: top;">Support Types:</td>
+                            <td>
+                                <div class="badges">
+                                    @foreach($report->support_types as $type)
+                                        <span class="badge">{{ $type }}</span>
+                                    @endforeach
                                 </div>
                             </td>
-                        @endif
+                        </tr>
+                    @endif
+                    @if($report->additional_comment)
+                        <tr>
+                            <td class="label-cell" style="vertical-align: top;">Additional Comments:</td>
+                            <td>{{ $report->additional_comment }}</td>
+                        </tr>
+                    @endif
+                </table>
+            </div>
+        </div>
 
-                        @if(($i + 1) % 3 === 0)
-                            </tr><tr>
-                        @endif
-                    @endforeach
-                </tr>
-            </table>
+        <!-- Photos Section -->
+        @if ($report->documents && $report->documents->isNotEmpty())
+            <div class="section">
+                <h2>Attached Photos</h2>
+                <div class="table-wrapper">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            @foreach ($report->documents as $i => $doc)
+                                @php
+                                    $img = private_image_base64($doc->disk, $doc->file_path);
+                                @endphp
+
+                                @if ($img)
+                                    <td style="width: 33.33%; text-align: center; vertical-align: top; padding: 8px;">
+                                        <img src="{{ $img }}" style="width: 100%; max-width: 180px; height: auto; border: 1px solid #e5e7eb; padding: 4px; background: #fff;">
+                                        <div style="font-size: 9px; margin-top: 4px; color: #6b7280;">
+                                            {{ $doc->description ?? $doc->original_name }}
+                                        </div>
+                                    </td>
+                                @endif
+
+                                @if (($i + 1) % 3 === 0 && ($i + 1) < $report->documents->count())
+                                    </tr><tr>
+                                @endif
+                            @endforeach
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        @endif
+
+        <div class="footer">
+            <p>This report was generated on {{ format_date(now(), 'Y-m-d H:i') }}</p>
+            <p>Secondment Weekly Report System</p>
         </div>
     </div>
-@endif
-
-                </td>
-            </tr>
-        </table>
-    </div>
 </body>
-
 </html>

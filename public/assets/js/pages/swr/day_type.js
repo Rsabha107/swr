@@ -14,7 +14,7 @@ $(document).ready(function () {
         // var spinner = new Spinner().spin(target);
         // $("#edit_venues_modal").modal("show");
         $.ajax({
-            url: "/wdr/setting/day_type/get/" + id,
+            url: "/swr/setting/day_type/get/" + id,
             type: "get",
             headers: {
                 "X-CSRF-TOKEN": $('input[name="_token"]').attr("value"), // Replace with your method of getting the CSRF token
@@ -50,7 +50,7 @@ $("body").on("click", "#deleteDayType", function (e) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: "/wdr/setting/day_type/delete/" + id,
+                url: "/swr/setting/day_type/delete/" + id,
                 type: "DELETE",
                 headers: {
                     "X-CSRF-TOKEN": $('input[name="_token"]').attr("value"), // Replace with your method of getting the CSRF token

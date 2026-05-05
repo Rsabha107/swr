@@ -3,29 +3,27 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\MicrosoftController;
-use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\SendMailController;
-use App\Http\Controllers\Wdr\Setting\EventController;
+use App\Http\Controllers\Swr\Setting\EventController;
 use App\Http\Controllers\GeneralSettings\EventDocumentController;
-use App\Http\Controllers\GeneralSettings\ParticipantDocumentController;
 use App\Http\Controllers\GeneralSettings\UploadController;
 
 use App\Http\Controllers\Security\ActivityAuditController;
 use App\Http\Controllers\Security\RoleController as SecurityRoleController;
-use App\Http\Controllers\Wdr\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Swr\Admin\UserController as AdminUserController;
 
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\Wdr\Setting\VenueController;
+use App\Http\Controllers\Swr\Setting\VenueController;
 use App\Http\Controllers\UtilController;
-use App\Http\Controllers\Wdr\Auth\AdminController as WdrAuthAdminController;
-use App\Http\Controllers\Wdr\Admin\DashboardController;
-use App\Http\Controllers\Wdr\Admin\ImportExportController;
-use App\Http\Controllers\Wdr\Admin\WorkforceDailyReportController as AdminWorkforceDailyReportController;
-use App\Http\Controllers\Wdr\Admin\WorkforceReportDocumentController;
-use App\Http\Controllers\Wdr\Customer\WorkforceDailyReportController;
-use App\Http\Controllers\Wdr\Setting\AppSettingController;
-use App\Http\Controllers\Wdr\Setting\DayTypeController;
-use App\Http\Controllers\Wdr\Setting\EventImageController;
+use App\Http\Controllers\Swr\Auth\AdminController as WdrAuthAdminController;
+use App\Http\Controllers\Swr\Admin\DashboardController;
+use App\Http\Controllers\Swr\Admin\ImportExportController;
+use App\Http\Controllers\Swr\Admin\WorkforceDailyReportController as AdminWorkforceDailyReportController;
+use App\Http\Controllers\Swr\Admin\WorkforceReportDocumentController;
+use App\Http\Controllers\Swr\Customer\WorkforceDailyReportController;
+use App\Http\Controllers\Swr\Setting\AppSettingController;
+use App\Http\Controllers\Swr\Setting\DayTypeController;
+use App\Http\Controllers\Swr\Setting\EventImageController;
 
 
 /*
@@ -47,8 +45,8 @@ Route::get('/', function () {
     }
 
     $roleRoutes = [
-        'SuperAdmin' => 'wdr.admin.report',
-        'Customer'   => 'wdr.report',
+        'SuperAdmin' => 'swr.admin.report',
+        'Customer'   => 'swr.report',
     ];
 
     foreach ($roleRoutes as $role => $route) {
@@ -76,7 +74,7 @@ Route::delete('/uploads/revert', [UploadController::class, 'revert'])->name('upl
 Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer', 'role:SuperAdmin', 'prevent-back-history', 'auth.session'])->group(function () {
 
     Route::controller(DashboardController::class)->group(function () {
-        Route::get('/wdr/admin/dashboard', 'dashboard')->name('wdr.admin.dashboard');
+        Route::get('/swr/admin/dashboard', 'dashboard')->name('swr.admin.dashboard');
     });
 
     //Import and Export
@@ -86,47 +84,27 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer', 'role:SuperAdmi
         Route::post('/wdr/admin/report/export', 'export')->name('wdr.admin.report.export');
     });
 
-    //WDR
-    Route::controller(AdminWorkforceDailyReportController::class)->group(function () {
-        Route::get('/wdr/admin/report', 'index')->name('wdr.admin.report');
-        Route::get('/wdr/admin/report/list', 'list')->name('wdr.admin.report.list');
-        Route::get('/wdr/admin/report/detail/{id}', 'detail')->name('wdr.admin.report.detail');
-        Route::get('/wdr/admin/report/gallery/{id}', 'gallery')->name('wdr.admin.report.gallery');
-        // for event switching
-        Route::get('/wdr/admin/events/{id}/switch',  'switch')->name('wdr.admin.event.switch');
-        Route::delete('/wdr/admin/report/delete/{id}', 'destroy')->name('wdr.admin.report.destroy');
-        
-    });
 
-    Route::controller(DayTypeController::class)->group(function () {
-        Route::get('/wdr/setting/day_type', 'index')->name('wdr.setting.day_type');
-        Route::get('/wdr/setting/day_type/list', 'list')->name('wdr.setting.day_type.list');
-        Route::get('/wdr/setting/day_type/get/{id}', 'get')->name('wdr.setting.day_type.get');
-        Route::post('wdr/setting/day_type/update', 'update')->name('wdr.setting.day_type.update');
-        Route::delete('/wdr/setting/day_type/delete/{id}', 'delete')->name('wdr.setting.day_type.delete');
-        Route::post('/wdr/setting/day_type/store', 'store')->name('wdr.setting.day_type.store');
-        Route::get('/wdr/setting/day_type/mv/get/{id}', 'getEventView')->name('wdr.setting.day_type.get.mv');
-    });
 
 
     //     // Venue
     Route::controller(VenueController::class)->group(function () {
-        Route::get('/wdr/setting/venue', 'index')->name('wdr.setting.venue');
-        Route::get('/wdr/setting/venue/list', 'list')->name('wdr.setting.venue.list');
-        Route::get('/wdr/setting/venue/get/{id}', 'get')->name('wdr.setting.venue.get');
-        Route::post('/wdr/setting/venue/update', 'update')->name('wdr.setting.venue.update');
-        Route::delete('/wdr/setting/venue/delete/{id}', 'delete')->name('wdr.setting.venue.delete');
-        Route::post('/wdr/setting/venue/store', 'store')->name('wdr.setting.venue.store');
+        Route::get('/swr/setting/venue', 'index')->name('swr.setting.venue');
+        Route::get('/swr/setting/venue/list', 'list')->name('swr.setting.venue.list');
+        Route::get('/swr/setting/venue/get/{id}', 'get')->name('swr.setting.venue.get');
+        Route::post('/swr/setting/venue/update', 'update')->name('swr.setting.venue.update');
+        Route::delete('/swr/setting/venue/delete/{id}', 'delete')->name('swr.setting.venue.delete');
+        Route::post('/swr/setting/venue/store', 'store')->name('swr.setting.venue.store');
     });
 
     //Event
     Route::controller(EventController::class)->group(function () {
-        Route::get('/wdr/setting/event', 'index')->name('wdr.setting.event');
-        Route::get('/wdr/setting/event/list', 'list')->name('wdr.setting.event.list');
-        Route::get('/wdr/setting/event/get/{id}', 'get')->name('wdr.setting.event.get');
-        Route::post('/wdr/setting/event/update', 'update')->name('wdr.setting.event.update');
-        Route::delete('/wdr/setting/event/delete/{id}', 'delete')->name('wdr.setting.event.delete');
-        Route::post('/wdr/setting/event/store', 'store')->name('wdr.setting.event.store');
+        Route::get('/swr/setting/event', 'index')->name('swr.setting.event');
+        Route::get('/swr/setting/event/list', 'list')->name('swr.setting.event.list');
+        Route::get('/swr/setting/event/get/{id}', 'get')->name('swr.setting.event.get');
+        Route::post('/swr/setting/event/update', 'update')->name('swr.setting.event.update');
+        Route::delete('/swr/setting/event/delete/{id}', 'delete')->name('swr.setting.event.delete');
+        Route::post('/swr/setting/event/store', 'store')->name('swr.setting.event.store');
     });
 
     Route::get('/auth/ms-signup', [WdrAuthAdminController::class, 'msSignUp'])->name('auth.ms.signup');
@@ -140,14 +118,14 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer', 'role:SuperAdmi
         Route::post('/wdr/invite-user', 'sendInvite')->name('wdr.admin.users.invite.send');
     });
 
-    //Applicaiton Setting
+    //Application Setting
     Route::controller(AppSettingController::class)->group(function () {
-        Route::get('/wdr/setting/application', 'index')->name('wdr.setting.application');
-        Route::get('/wdr/setting/application/list', 'list')->name('wdr.setting.application.list');
-        Route::get('/wdr/setting/application/get/{id}', 'get')->name('wdr.setting.application.get');
-        Route::post('/wdr/setting/application/update', 'update')->name('wdr.setting.application.update');
-        Route::delete('/wdr/setting/application/delete/{id}', 'delete')->name('wdr.setting.application.delete');
-        Route::post('/wdr/setting/application/store', 'store')->name('wdr.setting.application.store');
+        Route::get('/swr/setting/application', 'index')->name('swr.setting.application');
+        Route::get('/swr/setting/application/list', 'list')->name('swr.setting.application.list');
+        Route::get('/swr/setting/application/get/{id}', 'get')->name('swr.setting.application.get');
+        Route::post('/swr/setting/application/update', 'update')->name('swr.setting.application.update');
+        Route::delete('/swr/setting/application/delete/{id}', 'delete')->name('swr.setting.application.delete');
+        Route::post('/swr/setting/application/store', 'store')->name('swr.setting.application.store');
     });
 
     // docs
@@ -174,7 +152,7 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer', 'role:SuperAdmi
 
     // Event Image
     Route::controller(EventImageController::class)->group(function () {
-        Route::get('/wdr/setting/event/file/{id}', 'getPrivateFile')->name('wdr.setting.event.file');
+        Route::get('/swr/setting/event/file/{id}', 'getPrivateFile')->name('swr.setting.event.file');
     });
 
     Route::get('/reports/{report}/images/export', [WorkforceReportDocumentController::class, 'exportImages'])
@@ -206,7 +184,7 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer',  'role:Customer
         Route::get('/wdr/report/list', 'list')->name('wdr.report.list');
         Route::get('/wdr/report/gallery/{id}', 'gallery')->name('wdr.report.gallery');
         // for event switching
-        Route::get('/wdr/customer/events/{id}/switch',  'switch')->name('wdr.customer.guardian.switch');
+        Route::get('/swr/customer/events/{id}/switch',  'switch')->name('swr.customer.guardian.switch');
     });
 });
 

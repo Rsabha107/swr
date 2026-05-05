@@ -25,10 +25,10 @@ class NewReportMail extends Mailable implements ShouldQueue
 
     public function build()
     {
-        return $this->subject('WDR Report Confirmation'.' - ' .$this->details['event'] . ' | ' . $this->details['venue']. ' | ' . $this->details['report_date'])
+        return $this->subject('SWR Report Confirmation'.' - ' .$this->details['event'] . ' | ' . $this->details['venue']. ' | ' . $this->details['report_date'])
             ->view('emails.new_report_creation')
             // ->from('mds@scqa0.onmicrosoft.com', 'MDS')
-            ->attach(storage_path('app/private/wdr/pdf-exports/' . $this->details['filename']), [
+            ->attach(storage_path('app/private/swr/pdf-exports/' . $this->details['filename']), [
                 // 'as' => 'booking_confirmation.pdf',
                 'mime' => 'application/pdf',
             ])

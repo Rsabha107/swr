@@ -116,14 +116,14 @@
     <main class="main" id="top">
 
         {{-- <x-mds.nav.topmenu /> --}}
-        <x-wdr.admin.sidemenu />
-        @include('wdr.admin.body.header')
+        <x-swr.admin.sidemenu />
+        @include('swr.admin.body.header')
 
         {{-- // start of content --}}
         <div class="content">
             @yield('main')
-            @include('wdr.admin.partials.labels')
-            @include('wdr.admin.body.footer')
+            @include('swr.admin.partials.labels')
+            @include('swr.admin.body.footer')
         </div>
         {{-- // end of content --}}
 

@@ -21,11 +21,11 @@ $(document).ready(function () {
 
         console.log('Fetching venues for event ID:', eventId);
 
-        $url = `/wdr/events/${eventId}/venues`;
+        $url = `/swr/events/${eventId}/venues`;
         console.log('AJAX URL:', $url);
 
         $.ajax({
-            url: `/wdr/events/${eventId}/venues`,
+            url: `/swr/events/${eventId}/venues`,
             type: 'GET',
             async: true,
             success: function (venues) {

@@ -1,4 +1,4 @@
-@extends('wdr.customer.layout.template')
+@extends('swr.customer.layout.template')
 @section('main')
     <!-- ===============================================-->
     <!--    Main Content-->

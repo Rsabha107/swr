@@ -2,7 +2,7 @@
 
 
     $current_event_id = session()->get('EVENT_ID');
-    $event = App\Models\Wdr\Event::find($current_event_id);
+    $event = App\Models\Swr\Event::find($current_event_id);
 
     $id = Auth::user()->id;
     $profileData = App\Models\User::find($id);
@@ -17,7 +17,7 @@
                 data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse"
                 aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span
                         class="toggle-line"></span></span></button>
-            <a class="navbar-brand me-1 me-sm-3" href="{{ route('wdr.admin.report') }}">
+            <a class="navbar-brand me-1 me-sm-3" href="{{ route('swr.admin.report') }}">
                 <div class="d-flex align-items-center">
                     <div class="d-flex align-items-center">
                         <img src="{{ asset(config('settings.website_logo')) }}" alt="{{ config('settings.site_title') }}"
@@ -32,7 +32,7 @@
         </div>
         @php
 
-            $user_events = App\Models\Wdr\Event::where('active_flag', 1)->orderBy('name')->get();
+            $user_events = App\Models\Swr\Event::where('active_flag', 1)->orderBy('name')->get();
         @endphp
 
 
@@ -89,7 +89,7 @@
                                             $read = 'unread';
                                         @endphp
                                     @endif
-                                    <a href="{{ route('wdr.admin.event.switch', $event->id) }}"
+                                    <a href="{{ route('swr.admin.event.switch', $event->id) }}"
                                         class="text-decoration-none text-body-emphasis">
                                     <div class="px-2 px-sm-3 py-3 notification-card position-relative {{ $read }} border-bottom">
                                         <div
@@ -97,7 +97,7 @@
                                             <div class="d-flex">
                                                 <div class="avatar avatar-m {{ $avatar_status }} me-3">
                                                     <img class="rounded-circle"
-                                                        src="{{ route('wdr.setting.event.file', $event->id) }}"
+                                                        src="{{ route('swr.setting.event.file', $event->id) }}"
                                                         alt="" />
                                                 </div>
                                                 <div class="flex-1 me-sm-3">

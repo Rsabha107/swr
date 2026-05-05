@@ -29,7 +29,7 @@ $(document).ready(function () {
         if (window.EventPondEdit) window.EventPondEdit.clearUI();
 
         $.ajax({
-            url: "/wdr/setting/event/get/" + id,
+            url: "/swr/setting/event/get/" + id,
             type: "GET",
             headers: { "X-CSRF-TOKEN": $('input[name="_token"]').val() },
             dataType: "json",
@@ -76,7 +76,7 @@ $("body").on("click", "#deleteEvent", function (e) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: "/wdr/setting/event/delete/" + id,
+                url: "/swr/setting/event/delete/" + id,
                 type: "DELETE",
                 headers: {
                     "X-CSRF-TOKEN": $('input[name="_token"]').attr("value"), // Replace with your method of getting the CSRF token

@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Swr\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Swr\SecondmentWeeklyReport;
-use App\Models\Swr\SecondmentWeeklyReportDocument;
-use App\Models\Wdr\Event;
-use App\Models\Wdr\Venue;
+use App\Models\Swr\Event;
+use App\Models\Swr\Venue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -107,12 +106,21 @@ class SecondmentWeeklyReportController extends Controller
             $actions .= '<a href="' . route('swr.admin.report.pdf', $report->id) . '" target="_blank" class="btn btn-warning" title="Export as PDF"><i class="fas fa-file-pdf"></i></a>';
             $actions .= '</div>';
 
-            $image = null;
+                        if ($report->documents->isNotEmpty()) {
+                $link = '<a href="' . route('swr.report.gallery', $report->id) . '" target="_blank" class="position-relative d-inline-block">
+                    <i class="fa-solid fa-image fa-2x text-success"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
+                        ' . $report->documents->count() . '
+                    </span>
+                </a>';
+            } else {
+                $link = '<i class="fa-solid fa-image fa-2x text-muted"></i>';
+            }
 
             return [
                 'id' => $report->id,
                 'ref_number' => '<div class="align-middle white-space-wrap fs-9 ps-2">' . '<span class="badge rounded-pill ref-badge text-bg-light border px-3 py-2 fw-8 fw-semibold">' . $report->reference_number . '</span>' . '</div>',
-                'image' => $image ? '<img src="' . $image . '" alt="avatar" class="rounded-circle" style="width: 32px; height: 32px;">' : '<i class="fas fa-user-circle fa-2x"></i>',
+                'image' => '<div class="align-middle white-space-wrap fs-9 px-3">' . $link . '</div>',
                 'name' => $report->name ?? $report->user?->name ?? 'N/A',
                 'role' => $report->role ?? 'N/A',
                 'city' => $report->city ?? 'N/A',
@@ -233,7 +241,7 @@ class SecondmentWeeklyReportController extends Controller
         DB::transaction(function () use ($report) {
             // Delete all attached documents
             foreach ($report->documents as $doc) {
-                Storage::disk('public')->delete($doc->file_path);
+                Storage::disk($doc->disk)->delete($doc->file_path);
                 $doc->delete();
             }
             
@@ -325,5 +333,28 @@ class SecondmentWeeklyReportController extends Controller
             'MED', 'MEO', 'MER', 'MRD', 'OVL', 'PWR', 'SEC', 'SGN', 'SPS',
             'STM', 'SUS', 'TKT', 'TSV', 'WKF', 'Other',
         ];
+    }
+
+        public function switch($id)
+    {
+        if ($id) {
+            if (Event::findOrFail($id)) {
+                appLog('Event ID: ' . $id);
+
+                session()->put('EVENT_ID', $id);
+                appLog('Event ID: ' . session()->get('EVENT_ID'));
+                // return redirect()->route('tracki.project.show.card')->with('message', 'Workspace switched successfully.');
+                return redirect()->route('swr.admin.report')->with('message', 'Event Switched.');
+                // return back()->with('message', 'Event Switched.');
+            } else {
+                // return back()->with('error', 'Workspace not found.');
+                // return redirect()->route('tracki.project.show.card')->with('error', 'Workspace not found.');
+                return back()->with('error', 'Event not found.');
+            }
+        } else {
+            session()->forget('EVENT_ID');
+            // return redirect()->route('tracki.project.show.card')->with('message', 'Workspace switched successfully. now showing all workspace data');
+            return back()->withInput();
+        }
     }
 }

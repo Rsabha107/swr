@@ -4,7 +4,7 @@
             <div class="modal-header bg-modal-header">Add Setting Key
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form novalidate="" class="modal-content form-submit-event needs-validation" id="form_submit_application_setting" action="{{route('wdr.setting.application.store')}}" method="POST">
+            <form novalidate="" class="modal-content form-submit-event needs-validation" id="form_submit_application_setting" action="{{route('swr.setting.application.store')}}" method="POST">
                 @csrf
                 <input type="hidden" name="table" value="application_table">
                 <div class="modal-body">
@@ -38,7 +38,7 @@
             <div class="modal-header bg-modal-header">Edit Setting Key
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form novalidate="" class="modal-content form-submit-event needs-validation" id="edit_form_submit_app_setting" action="{{route('wdr.setting.application.update')}}" method="POST">
+            <form novalidate="" class="modal-content form-submit-event needs-validation" id="edit_form_submit_app_setting" action="{{route('swr.setting.application.update')}}" method="POST">
                 @csrf
                 <input type="hidden" id="edit_app_setting_id" name="id" value="">
                 <input type="hidden" id="edit_app_setting_table" name="table" value='app_setting_table'>

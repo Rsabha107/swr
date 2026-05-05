@@ -1,7 +1,7 @@
 @php
 
     $current_event_id = session()->get('EVENT_ID');
-    $event = App\Models\Wdr\Event::find($current_event_id);
+    $event = App\Models\Swr\Event::find($current_event_id);
 
     // appLog('Current Event:', ['event' => $event]);
 
@@ -37,7 +37,7 @@
         @php
             $user_events = auth()->user()->events;
             $user_events = $user_events->where('active_flag', 1)->sortBy('name');
-            // $user_events = App\Models\Wdr\Event::where('active_flag', 1)->orderBy('name')->get();
+            // $user_events = App\Models\Swr\Event::where('active_flag', 1)->orderBy('name')->get();
         @endphp
 
         <ul class="navbar-nav navbar-nav-icons flex-row">
@@ -78,7 +78,7 @@
                                             $read = 'unread';
                                         @endphp
                                     @endif
-                                    <a href="{{ route('wdr.customer.guardian.switch', $event->id) }}"
+                                    <a href="{{ route('swr.customer.event.switch', $event->id) }}"
                                         class="text-decoration-none text-body-emphasis">
                                         <div
                                             class="px-2 px-sm-3 py-3 notification-card position-relative {{ $read }} border-bottom">
@@ -87,7 +87,7 @@
                                                 <div class="d-flex">
                                                     <div class="avatar avatar-m {{ $avatar_status }} me-3">
                                                         <img class="rounded-circle"
-                                                            src="{{ route('wdr.setting.event.file', $event->id) }}"
+                                                            src="{{ route('swr.setting.event.file', $event->id) }}"
                                                             alt="" />
                                                     </div>
                                                     <div class="flex-1 me-sm-3">
@@ -134,14 +134,14 @@
                         <div class="overflow-auto scrollbar">
                             <ul class="nav d-flex flex-column mb-2 pb-1">
                                 {{-- <li class="nav-item">
-                                    <a class="nav-link px-3 d-block" href="{{ route('wdr.customer.report') }}"> <span
+                                    <a class="nav-link px-3 d-block" href="{{ route('swr.customer.report') }}"> <span
                                             class="me-2 text-body align-bottom" data-feather="user"></span><span>My
                                             Requests</span>
                                     </a>
                                 </li> --}}
                                 @if ($user->hasRole('Manager'))
                                     <li class="nav-item">
-                                        <a class="nav-link px-3 d-block" href="{{ route('wdr.manager') }}"> <span
+                                        <a class="nav-link px-3 d-block" href="{{ route('swr.manager') }}"> <span
                                                 class="me-2 text-body align-bottom"
                                                 data-feather="user"></span><span>Manager's View</span>
                                         </a>

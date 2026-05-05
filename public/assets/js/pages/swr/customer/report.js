@@ -2,9 +2,9 @@ $(document).ready(function () {
     console.log('report.js loaded');
 
     // delete participant
-    $("body").on("click", "#deleteReport", function (e) {
+    $("body").on("click", ".delete-report", function (e) {
         var id = $(this).data("id");
-        var tableID = $(this).data("table");
+        var tableID = $(this).data("table") || "report_table";
         e.preventDefault();
         // console.log('in deleteBooking '+id);
         // console.log('in deleteBooking '+tableID);
@@ -21,7 +21,7 @@ $(document).ready(function () {
             if (result.isConfirmed) {
                 // console.log('inside confirmed')
                 $.ajax({
-                    url: "/wdr/report/delete/" + id,
+                    url: "/swr/report/delete/" + id,
                     type: "DELETE",
                     headers: {
                         // "X-CSRF-TOKEN": $('input[name="_token"]').attr("value"),
@@ -32,7 +32,7 @@ $(document).ready(function () {
                     dataType: "json",
                     success: function (result) {
                         // alert(result)
-                        if (!result["error"]) {
+                        if (result["success"]) {
                             toastr.success(result["message"]);
                             $("#" + tableID).bootstrapTable("refresh");
                             // Swal.fire(

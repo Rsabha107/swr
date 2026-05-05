@@ -51,14 +51,14 @@
                                 <li class="collapsed-nav-item-title d-none">Reports</li>
 
                                 <!-- Guest main pages -->
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a class="nav-link {{ Request::is('wdr/admin/report') ? 'active' : '' }}"
                                         href="{{ route('wdr.admin.report') }}">
                                         <div class="d-flex align-items-center">
                                             <span class="nav-link-text">Daily Reports</span>
                                         </div>
                                     </a>
-                                </li>
+                                </li> --}}
                                 <!-- Guest main pages -->
                                 <li class="nav-item">
                                     <a class="nav-link {{ Request::is('swr/admin/report') ? 'active' : '' }}"
@@ -105,14 +105,14 @@
                             </div>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link {{ Request::is('wdr/setting/day_type') ? 'active' : '' }}"
                             href="{{ route('wdr.setting.day_type') }}">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-text">Day Type</span>
                             </div>
                         </a>
-                    </li>
+                    </li> --}}
                     {{-- <li class="nav-item">
                         <a class="nav-link {{ Request::is('wdr/setting/nationality') ? 'active' : '' }}"
                             href="{{ route('wdr.setting.nationality') }}">

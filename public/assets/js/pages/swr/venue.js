@@ -14,7 +14,7 @@ $(document).ready(function () {
         // var spinner = new Spinner().spin(target);
         // $("#edit_venues_modal").modal("show");
         $.ajax({
-            url: "/wdr/setting/venue/get/" + id,
+            url: "/swr/setting/venue/get/" + id,
             type: "get",
             headers: {
                 "X-CSRF-TOKEN": $('input[name="_token"]').attr("value"), // Replace with your method of getting the CSRF token

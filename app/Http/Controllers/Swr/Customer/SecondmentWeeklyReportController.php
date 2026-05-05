@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Swr\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendNewReportEmailJob;
 use App\Models\Swr\SecondmentWeeklyReport;
 use App\Models\Swr\SecondmentWeeklyReportDocument;
-use App\Models\Wdr\Event;
-use App\Models\Wdr\Venue;
-use App\Models\Wdr\FunctionalArea;
+use App\Models\Swr\Event;
+use App\Models\Swr\Venue;
+use App\Models\Swr\FunctionalArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SecondmentWeeklyReportController extends Controller
 {
@@ -54,7 +56,7 @@ class SecondmentWeeklyReportController extends Controller
     {
         $event = Event::findOrFail(session()->get('EVENT_ID'));
         $user = Auth::user();
-        
+
         // Get venues assigned to this user and event
         $venues = $user->venues()
             ->whereIn('venues.id', function ($q) use ($event) {
@@ -84,6 +86,38 @@ class SecondmentWeeklyReportController extends Controller
         ));
     }
 
+    public function GenerateFileName(SecondmentWeeklyReport $op, $seq = 0, $extension = 'pdf')
+    {
+
+        // ---------- Build automated filename ----------
+        // Pick the right date field from your model (adjust if needed)
+        $date = $op->reporting_week ?? $op->created_at;
+        $dateStr = Carbon::parse($date)->format('Ymd');
+
+        // Stadium / venue code (adjust field names)
+        $stadiumCode = $op->venue?->short_name ?? 'Venue';
+
+        // Report number (adjust field names)
+        $serialNumber = getNumber($op->reference_number ?? '0');
+
+        if ($seq > 0) {
+            $serialNumber .= '-' . $seq;
+        }
+
+        // Ensure extension is not empty
+        $extension = !empty($extension) ? $extension : 'pdf';
+
+        // Example: 20260216_974_Match Report #1_Kuwait-Qatar.pdf
+        $filename = "{$stadiumCode}-{$dateStr}-{$serialNumber}" . ".{$extension}";
+
+        // sanitize filename for Windows/Linux
+        $filename = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '-', $filename);
+        $filename = preg_replace('/\s+/', ' ', trim($filename));
+        // ---------------------------------------------
+
+        return $filename;
+    }
+
     /**
      * Store a newly created secondment weekly report
      */
@@ -96,52 +130,55 @@ class SecondmentWeeklyReportController extends Controller
         $validated = $request->validate([
             'reporting_week' => ['required', 'date_format:d/m/Y'],
             'venue_id' => 'required|exists:venues,id',
-            
+
             // Basic Information
             'name' => 'nullable|string|max:255',
             'role' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
-            
+
             // Weekly Activities
             'main_activities' => 'required|string|max:5000',
-            
+
             // Gained Experience
             'experience_gained' => 'required|string|max:5000',
-            
+
             // Innovation
             'innovation_description' => 'required|string|max:5000',
             'innovation_functional_areas' => 'nullable|array',
             'innovation_functional_areas.*' => 'exists:functional_areas,id',
             'innovation_other_area' => 'nullable|string|max:500',
-            
+
             // Challenges
             'challenges_description' => 'required|string|max:5000',
             'challenges_resolved' => 'required|in:yes,no',
             'challenges_functional_areas' => 'nullable|array',
             'challenges_functional_areas.*' => 'exists:functional_areas,id',
             'challenges_other_area' => 'nullable|string|max:500',
-            
+
             // Photos
             'photos' => 'nullable|array',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
-            
+
             // Value for Qatar
             'value_for_qatar' => 'required|in:yes,no',
             'value_for_qatar_type' => 'nullable|in:Must Have,Good to Have,Requires further assessment',
             'value_for_qatar_description' => 'nullable|string|max:5000',
-            
+
             // HR / Wellbeing
             'wellbeing_status' => 'required|in:Good,Moderate,Challenging',
             'needs_support' => 'required|in:yes,no',
             'support_types' => 'nullable|array',
             'support_types.*' => 'string',
             'support_other_description' => 'nullable|string|max:500',
-            
+
             // Additional Comment
             'additional_comment' => 'nullable|string|max:2000',
         ]);
 
-        DB::transaction(function () use ($request, $validated, $user) {
+        $report = null;
+        $seq = 0;
+
+        DB::transaction(function () use ($request, $validated, $user, &$report, &$seq) {
             // Debug logging
             Log::info('SWR Store - Challenges Functional Areas', [
                 'challenges_functional_areas' => $validated['challenges_functional_areas'] ?? [],
@@ -217,7 +254,7 @@ class SecondmentWeeklyReportController extends Controller
                         Log::error("Cannot open photo file for SWR report ID: {$report->id}");
                         continue;
                     }
-                    Storage::disk('public')->writeStream("{$dir}/{$filename}", $stream);
+                    Storage::disk('local')->writeStream("{$dir}/{$filename}", $stream);
                     fclose($stream);
                     $path = "{$dir}/{$filename}";
 
@@ -226,6 +263,7 @@ class SecondmentWeeklyReportController extends Controller
                         'original_name' => $photo->getClientOriginalName(),
                         'file_name' => $filename,
                         'file_path' => $path,
+                        'disk' => 'local',
                         'mime_type' => $photo->getClientMimeType(),
                         'file_size' => $photo->getSize(),
                         'document_type' => 'photo',
@@ -237,10 +275,53 @@ class SecondmentWeeklyReportController extends Controller
             }
 
             Log::info('Secondment Weekly Report created', ['report_id' => $report->id, 'user_id' => $user->id]);
+
+            $save_pass_pdf = $this->save_pass_pdf($report, $seq);
+
+            if ($save_pass_pdf) {
+                $details = [
+                    'email' => [$user->email],
+                    'venue' => $report->venue->title,
+                    'event' => $report->event->name,
+                    'reference_number' => $report->reference_number,
+                    'report_date' => \Carbon\Carbon::parse($report->reporting_week)->format('l jS \of F Y'),
+                    'filename' => $this->GenerateFileName($report),
+                    // 'filename' => $report->venue?->short_name . '_' . $report->reference_number . '.pdf',
+                ];
+
+                // Log::info('BookingController::store details: ' . json_encode($details));
+                if (config('settings.send_notifications')) {
+                    SendNewReportEmailJob::dispatch($details);
+                }
+            }
         });
 
         return redirect()->route('swr.report')
             ->with(['type' => 'success', 'message' => 'Report created successfully!']);
+    }
+
+    public function save_pass_pdf($swr, $seq)
+    {
+        // set_time_limit(300);
+
+        $qr_code = null;
+        
+        // Reload with documents for PDF generation
+        $swr->load('documents');
+
+        $data = [
+            'report' => $swr,
+            'qr_code' => $qr_code,
+        ];
+
+        $filename = $this->GenerateFileName($swr);
+
+        $data['css'] = public_path('assets/css/invoice.css');
+        $pdf = Pdf::loadView('swr.admin.report.pdf', $data);
+        Storage::disk('private')->put('swr/pdf-exports/' . $filename, $pdf->output());
+        // Storage::disk('private')->put('swr/pdf-exports/' . $swr->reference_number . '.pdf', $pdf->output());
+
+        return 1;
     }
 
     /**
@@ -272,19 +353,18 @@ class SecondmentWeeklyReportController extends Controller
 
         $rows = $reports->through(function ($report) {
             $statusBadge = '<span class="badge bg-' . $this->getStatusColor($report->status) . '">' . $report->getStatusLabel() . '</span>';
-            
+
             $actions = '<div class="btn-group" role="group">';
-            $actions .= '<a href="' . route('swr.report.detail', $report->id) . '" class="btn btn-sm btn-info" title="View"><i class="fas fa-eye"></i></a>';
-            
+            $actions .= '<a href="' . route('swr.report.pdf', $report->id) . '" class="btn btn-sm btn-danger" title="Generate PDF" target="_blank"><i class="fas fa-file-pdf"></i></a>';
+
             if ($report->canEdit()) {
-                $actions .= '<a href="' . route('swr.report.edit', $report->id) . '" class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></a>';
-                $actions .= '<a href="javascript:void(0)" class="btn btn-sm btn-danger delete-report" data-id="' . $report->id . '" title="Delete"><i class="fas fa-trash"></i></a>';
+                $actions .= '<a href="javascript:void(0)" class="btn btn-sm btn-danger delete-report" data-id="' . $report->id . '" data-table="report_table" title="Delete"><i class="fas fa-trash"></i></a>';
             }
-            
+
             if ($report->documents->count() > 0) {
                 $actions .= '<a href="' . route('swr.report.gallery', $report->id) . '" class="btn btn-sm btn-secondary" title="Photos (' . $report->documents->count() . ')"><i class="fas fa-images"></i></a>';
             }
-            
+
             $actions .= '</div>';
 
             if ($report->documents->isNotEmpty()) {
@@ -362,10 +442,10 @@ class SecondmentWeeklyReportController extends Controller
         DB::transaction(function () use ($report) {
             // Delete all attached documents
             foreach ($report->documents as $doc) {
-                Storage::disk('public')->delete($doc->file_path);
+                Storage::disk($doc->disk)->delete($doc->file_path);
                 $doc->delete();
             }
-            
+
             // Delete the report
             $report->delete();
         });
@@ -386,7 +466,7 @@ class SecondmentWeeklyReportController extends Controller
 
         $events = Event::all();
         $user = Auth::user();
-        
+
         // Get venues for the current event
         $venues = $user->venues()
             ->whereIn('venues.id', function ($q) use ($report) {
@@ -415,43 +495,43 @@ class SecondmentWeeklyReportController extends Controller
             'reporting_week' => 'required|date',
             'venue_id' => 'required|exists:venues,id',
             'event_id' => 'required|exists:events,id',
-            
+
             // Basic Information
             'name' => 'nullable|string|max:255',
             'role' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
-            
+
             // Weekly Activities
             'main_activities' => 'required|string|max:5000',
-            
+
             // Gained Experience
             'experience_gained' => 'required|string|max:5000',
-            
+
             // Innovation
             'innovation_description' => 'required|string|max:5000',
             'innovation_functional_areas' => 'nullable|array',
             'innovation_functional_areas.*' => 'exists:functional_areas,id',
-            
+
             // Challenges
             'challenges_description' => 'required|string|max:5000',
             'challenges_resolved' => 'required|in:0,1',
             'challenges_functional_areas' => 'nullable|array',
             'challenges_functional_areas.*' => 'exists:functional_areas,id',
-            
+
             // Value for Qatar
             'value_for_qatar' => 'required|in:0,1',
             'value_for_qatar_type' => 'nullable|string|max:255',
             'value_for_qatar_description' => 'nullable|string|max:5000',
-            
+
             // HR / Wellbeing
             'wellbeing_status' => 'required|in:Good,Moderate,Challenging',
             'needs_support' => 'required|in:0,1',
             'support_types' => 'nullable|array',
             'support_types.*' => 'string',
-            
+
             // Additional Comment
             'additional_comment' => 'nullable|string|max:2000',
-            
+
             // Status
             'status' => 'required|in:draft,submitted',
         ]);
@@ -519,6 +599,25 @@ class SecondmentWeeklyReportController extends Controller
 
         return redirect()->route('swr.report')
             ->with(['type' => 'success', 'message' => 'Event switched successfully!']);
+    }
+
+    /**
+     * Generate PDF for a report
+     */
+    public function reportPdf($id)
+    {
+        $report = SecondmentWeeklyReport::with(['event', 'venue', 'user', 'innovationFunctionalAreas.functionalArea', 'challengeFunctionalAreas.functionalArea'])->findOrFail($id);
+        $this->authorize('view', $report);
+
+        $data = [
+            'report' => $report,
+            'css' => public_path('css/pdf.css'),
+        ];
+
+        $filename = 'SWR-' . $report->event?->name . '-' . $report->venue?->title . '-' . format_date($report->reporting_week, 'Ymd') . '.pdf';
+
+        $pdf = Pdf::loadView('swr.admin.report.pdf', $data);
+        return $pdf->stream($filename);
     }
 
     /**

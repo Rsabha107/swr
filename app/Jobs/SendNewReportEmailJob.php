@@ -31,7 +31,7 @@ class SendNewReportEmailJob implements ShouldQueue
     public function handle()
     {
 
-        Mail::to('wcc@loc.qa')
+        Mail::to('rsabha@gmail.com')
             ->bcc('r.sabha@sc.qa')
             ->send(new NewReportMail($this->details));
     }

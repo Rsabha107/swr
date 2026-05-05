@@ -113,12 +113,12 @@
             </div>
         </div>
         {{-- // start of content --}}
-        @include('wdr.customer.body.header')
+        @include('swr.customer.body.header')
         {{-- <x-vapp.customer.sidemenu_h /> --}}
         <div class="content">
             @yield('main')
-            @include('wdr.customer.partials.labels')
-            @include('wdr.customer.body.footer')
+            @include('swr.customer.partials.labels')
+            @include('swr.customer.body.footer')
         </div>
         {{-- // end of content --}}
 

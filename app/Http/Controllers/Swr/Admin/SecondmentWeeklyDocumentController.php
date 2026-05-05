@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Swr\Admin;
 
 use App\Http\Controllers\Controller;
 
-use App\Models\Wdr\WorkforceDailyReport;
-use App\Models\Wdr\WorkforceDailyReportDocument;
+use App\Models\Swr\SecondmentWeeklyReport;
+use App\Models\Swr\SecondmentWeeklyReportDocument;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -14,7 +14,7 @@ use ZipArchive;
 
 class SecondmentWeeklyDocumentController extends Controller
 {
-    public function exportImages(WorkforceDailyReport $report)
+    public function exportImages(SecondmentWeeklyReport $report)
     {
         $zip = new ZipArchive();
 
@@ -29,10 +29,10 @@ class SecondmentWeeklyDocumentController extends Controller
             abort(500, 'Cannot create zip file');
         }
 
-        foreach ($report->photos as $doc) {
-            if ($doc->mime && str_starts_with($doc->mime, 'image/')) {
-                $content = Storage::disk($doc->disk)->get($doc->path);
-                $zip->addFromString($doc->custom_name ?? $doc->original_name ?? basename($doc->path), $content);
+        foreach ($report->documents as $doc) {
+            if ($doc->mime_type && str_starts_with($doc->mime_type, 'image/')) {
+                $content = Storage::disk($doc->disk)->get($doc->file_path);
+                $zip->addFromString($doc->description ?? $doc->original_name ?? basename($doc->file_path), $content);
             }
         }
 
@@ -40,58 +40,56 @@ class SecondmentWeeklyDocumentController extends Controller
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
-    public function download(WorkforceDailyReportDocument $document)
+    public function download(SecondmentWeeklyReportDocument $document)
     {
-        Log::info('Request to download guardian document: ' . $document->id);
-        // TODO: add policy check (important!)
+        Log::info('Request to download SWR document: ' . $document->id);
+        
         if (!Auth::check()) {
             abort(403, 'Unauthorized');
         }
 
-        Log::info('Downloading guardian document: ' . $document->id);
+        Log::info('Downloading SWR document: ' . $document->id);
 
-        abort_unless(Storage::disk($document->disk)->exists($document->path), 404);
+        abort_unless(Storage::disk($document->disk)->exists($document->file_path), 404);
 
         // inline preview for images/pdf
-        return Storage::disk($document->disk)->response($document->path, $document->original_name ?? basename($document->path), [
-            'Content-Disposition' => 'inline; filename="' . ($document->original_name ?? basename($document->path)) . '"',
+        return Storage::disk($document->disk)->response($document->file_path, $document->original_name ?? basename($document->file_path), [
+            'Content-Disposition' => 'inline; filename="' . ($document->original_name ?? basename($document->file_path)) . '"',
         ]);
 
         // download for other file types
         return Storage::disk($document->disk)->download(
-            $document->path,
-            $document->original_name ?? basename($document->path)
+            $document->file_path,
+            $document->original_name ?? basename($document->file_path)
         );
     }
 
-    public function view(WorkforceDailyReportDocument $document)
+    public function view(SecondmentWeeklyReportDocument $document)
     {
-        // TODO authorize
-
-        // Log::info('doc: ' . json_encode($document));
         if (!Auth::check()) {
             abort(403, 'Unauthorized');
         }
+        
         $disk = Storage::disk($document->disk);
-        abort_unless($disk->exists($document->path), 404);
+        abort_unless($disk->exists($document->file_path), 404);
 
-        return response($disk->get($document->path), 200, [
-            'Content-Type' => $document->mime ?? 'image/jpeg',
-            'Content-Disposition' => 'inline; filename="' . ($document->original_name ?? basename($document->path)) . '"',
+        return response($disk->get($document->file_path), 200, [
+            'Content-Type' => $document->mime_type ?? 'image/jpeg',
+            'Content-Disposition' => 'inline; filename="' . ($document->original_name ?? basename($document->file_path)) . '"',
             'Cache-Control' => 'private, max-age=86400',
         ]);
     }
 
-    public function destroy(WorkforceDailyReportDocument $document)
+    public function destroy(SecondmentWeeklyReportDocument $document)
     {
-        // TODO: add policy check (important!)
         if (!Auth::check()) {
             abort(403, 'Unauthorized');
         }
-        Storage::disk($document->disk)->delete($document->path);
+        
+        Storage::disk($document->disk)->delete($document->file_path);
         $document->delete();
 
-        Log::info('Deleted workforce daily report document: ' . $document->id);
+        Log::info('Deleted SWR document: ' . $document->id);
 
         return response()->json(['error' => false, 'message' => 'Document deleted']);
     }

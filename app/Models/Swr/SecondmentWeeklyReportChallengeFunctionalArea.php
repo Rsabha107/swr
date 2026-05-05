@@ -19,6 +19,6 @@ class SecondmentWeeklyReportChallengeFunctionalArea extends Model
 
     public function functionalArea()
     {
-        return $this->belongsTo(\App\Models\Wdr\FunctionalArea::class, 'functional_area_id');
+        return $this->belongsTo(\App\Models\Swr\FunctionalArea::class, 'functional_area_id');
     }
 }

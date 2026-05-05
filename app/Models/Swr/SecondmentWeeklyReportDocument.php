@@ -4,17 +4,16 @@ namespace App\Models\Swr;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SecondmentWeeklyReportDocument extends Model
 {
-    use SoftDeletes;
     
     protected $fillable = [
         'secondment_weekly_report_id',
         'original_name',
         'file_name',
         'file_path',
+        'disk',
         'mime_type',
         'file_size',
         'document_type',

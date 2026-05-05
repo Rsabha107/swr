@@ -38,6 +38,7 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer', 'role:SuperAdmi
         Route::get('/swr/admin/report/pdf/{id?}', 'reportPdf')->name('swr.admin.report.pdf');
         Route::get('/swr/admin/events/{id}/venues', 'byEvent')->name('swr.admin.events.venues');
         Route::delete('/swr/admin/report/delete/{id}', 'destroy')->name('swr.admin.report.destroy');
+        Route::get('/swr/admin/events/{id}/switch',  'switch')->name('swr.admin.event.switch');
     });
 
 });
@@ -56,6 +57,9 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer', 'role:SuperAdmi
 
     Route::delete('/swr/docs/{document}', [SecondmentWeeklyDocumentController::class, 'destroy'])
         ->name('swr.docs.destroy');
+
+    Route::get('/swr/report/gallery/{id}', [SecondmentWeeklyReportController::class, 'gallery'])->name('swr.report.gallery');
+
 });
 
 Route::middleware(['auth', 'otp', 'XssSanitizer',  'role:Customer',  'prevent-back-history', 'auth.session'])->group(function () {
@@ -73,7 +77,7 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer',  'role:Customer
         Route::get('/swr/report/detail/{id}', 'detail')->name('swr.report.detail');
         Route::get('/swr/report/edit/{id}', 'edit')->name('swr.report.edit');
         Route::put('/swr/report/update/{id}', 'update')->name('swr.report.update');
-        Route::get('/swr/report/gallery/{id}', 'gallery')->name('swr.report.gallery');
+        Route::get('/swr/report/pdf/{id}', 'reportPdf')->name('swr.report.pdf');
         Route::delete('/swr/report/delete/{id}', 'destroy')->name('swr.report.destroy');
         // for event switching
         Route::get('/swr/customer/events/{id}/switch',  'switch')->name('swr.customer.event.switch');

@@ -1,4 +1,4 @@
-@extends('wdr.layout.admin_template')
+@extends('swr.layout.admin_template')
 @section('main')
 
 
@@ -16,7 +16,7 @@
         <x-setting.application-card />
     {{-- </div> --}}
 
-    @include('wdr.setting.modals.application_setting_modals')
+    @include('swr.setting.modals.application_setting_modals')
 
     <script>
         var label_update = '<?= get_label('update', 'Update') ?>';
@@ -24,7 +24,7 @@
         var label_not_assigned = '<?= get_label('not_assigned', 'Not assigned') ?>';
         var label_duplicate = '<?= get_label('duplicate', 'Duplicate') ?>';
     </script>
-    <script src="{{asset('assets/js/pages/wdr/application_setting.js')}}"></script>
+    <script src="{{asset('assets/js/pages/swr/application_setting.js')}}"></script>
     @endsection
 
     @push('script')

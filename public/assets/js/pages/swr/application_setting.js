@@ -14,7 +14,7 @@ $(document).ready(function () {
         // var spinner = new Spinner().spin(target);
         // $("#edit_venues_modal").modal("show");
         $.ajax({
-            url: "/wdr/setting/application/get/" + id,
+            url: "/swr/setting/application/get/" + id,
             type: "get",
             headers: {
                 "X-CSRF-TOKEN": $('input[name="_token"]').attr("value"), // Replace with your method of getting the CSRF token
@@ -51,7 +51,7 @@ $("body").on("click", "#deleteRsp", function (e) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: "/wdr/setting/rsp/delete/" + id,
+                url: "/swr/setting/rsp/delete/" + id,
                 type: "DELETE",
                 headers: {
                     "X-CSRF-TOKEN": $('input[name="_token"]').attr("value"), // Replace with your method of getting the CSRF token

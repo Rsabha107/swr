@@ -10,7 +10,7 @@
                         data-toggle="table"
                         data-classes="table table-hover  fs-9 mb-0 border-top border-translucent"
                         data-loading-template="loadingTemplate"
-                        data-url="{{ route('mds.setting.funcareas.list')}}"
+                        data-url="{{ route('swr.setting.funcareas.list')}}"
                         data-icons-prefix="bx"
                         data-icons="icons"
                         data-show-export="true"

@@ -172,7 +172,7 @@
                     <textarea class="form-control" id="main_activities" name="main_activities" rows="4"
                         placeholder="Describe your main activities..." required>{{ old('main_activities') }}</textarea>
                 </div>
-                <small class="text-muted">Free text (mandatory)</small>
+                {{-- <small class="text-muted">Free text (mandatory)</small> --}}
             </div>
 
             <!-- Gained Experience -->
@@ -183,7 +183,7 @@
                     <textarea class="form-control" id="experience_gained" name="experience_gained" rows="4"
                         placeholder="Describe your learning..." required>{{ old('experience_gained') }}</textarea>
                 </div>
-                <small class="text-muted">Free text (mandatory)</small>
+                {{-- <small class="text-muted">Free text (mandatory)</small> --}}
             </div>
 
             <!-- Innovation Section -->
@@ -194,7 +194,7 @@
                     <textarea class="form-control" id="innovation_description" name="innovation_description" rows="3"
                         placeholder="Describe any innovations..." required>{{ old('innovation_description') }}</textarea>
                 </div>
-                <small class="text-muted">Short description (Free text – mandatory)</small>
+                {{-- <small class="text-muted">Short description (Free text – mandatory)</small> --}}
 
                 <div class="form-group">
                     <label class="mb-1">Functional Area(s) impacted (Multi-select)</label>
@@ -223,7 +223,7 @@
                     <textarea class="form-control" id="challenges_description" name="challenges_description" rows="3"
                         placeholder="Describe any challenges..." required>{{ old('challenges_description') }}</textarea>
                 </div>
-                <small class="text-muted">Short description (Free text – mandatory)</small>
+                {{-- <small class="text-muted">Short description (Free text – mandatory)</small> --}}
 
                 <div class="form-group">
                     <label class="mb-1">Was it resolved? <span class="text-danger">*</span></label>
@@ -259,12 +259,12 @@
                 </div>
             </div>
 
-                <div id="challenges_other_container" style="display:none;">
+                {{-- <div id="challenges_other_container" style="display:none;">
                     <div class="mb-3">
                         <label class="mb-1" for="challenges_other_area">Please specify other area</label>
                         <input type="text" class="form-control" id="challenges_other_area" name="challenges_other_area" value="{{ old('challenges_other_area') }}">
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Attach Photos -->

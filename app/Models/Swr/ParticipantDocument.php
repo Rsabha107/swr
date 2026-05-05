@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models\Swr;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class ParticipantDocument extends Model
+{
+    //
+    use HasFactory;
+    protected $guarded = [];
+    protected $table = 'participant_documents';
+
+    // protected $fillable = [
+    //     'participant_id','category','disk','path','original_name','mime','size','created_by'
+    // ];
+
+    public function participant()
+    {
+        return $this->belongsTo(Participant::class);
+    }
+}

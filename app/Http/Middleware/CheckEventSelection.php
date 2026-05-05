@@ -22,9 +22,9 @@ class CheckEventSelection
             if (!session()->has('EVENT_ID') && auth()->check()) {
                 if (auth()->user()->hasRole('SuperAdmin')) {
                     session()->put('EVENT_ID', 11);
-                    return redirect()->route('wdr.admin.report');
+                    return redirect()->route('swr.admin.report');
                 } elseif (auth()->user()->hasRole('Customer')) {
-                    return redirect()->route('wdr.customer.report.pick');
+                    return redirect()->route('swr.customer.report.pick');
                 } else {
                     // appLog('CheckEventSelection: Redirecting to pick event');
                     return redirect()->route('login');

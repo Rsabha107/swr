@@ -18,7 +18,7 @@
                             <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-home">
                                 <li class="collapsed-nav-item-title d-none">Home
                                 </li>
-                                <li class="nav-item"><a class="nav-link" href="{{ route('wdr.admin.dashboard') }}">
+                                <li class="nav-item"><a class="nav-link" href="{{ route('swr.admin.dashboard') }}">
                                         <div class="d-flex align-items-center"><span
                                                 class="nav-link-text">Dashboard</span>
                                         </div>
@@ -46,19 +46,19 @@
                             </div>
                         </a>
                         <div class="parent-wrapper label-1">
-                            <ul class="nav collapse parent {{ Request::is('wdr/admin/report*') || Request::is('wdr/setting/*') || Request::is('swr/admin/report*') ? 'show' : '' }}"
+                            <ul class="nav collapse parent {{ Request::is('swr/admin/report*') || Request::is('swr/setting/*') || Request::is('swr/admin/report*') ? 'show' : '' }}"
                                 data-bs-parent="#navbarVerticalCollapse" id="nv-guest">
                                 <li class="collapsed-nav-item-title d-none">Reports</li>
 
                                 <!-- Guest main pages -->
-                                <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('wdr/admin/report') ? 'active' : '' }}"
-                                        href="{{ route('wdr.admin.report') }}">
+                                {{-- <li class="nav-item">
+                                    <a class="nav-link {{ Request::is('swr/admin/report') ? 'active' : '' }}"
+                                        href="{{ route('swr.admin.report') }}">
                                         <div class="d-flex align-items-center">
                                             <span class="nav-link-text">Daily Reports</span>
                                         </div>
                                     </a>
-                                </li>
+                                </li> --}}
                                 <!-- Guest main pages -->
                                 <li class="nav-item">
                                     <a class="nav-link {{ Request::is('swr/admin/report') ? 'active' : '' }}"
@@ -70,8 +70,8 @@
                                 </li>
                                 <!-- Flight main pages -->
                                 {{-- <li class="nav-item">
-                                    <a class="nav-link {{ Request::is('wdr/admin/flight') ? 'active' : '' }}"
-                                        href="{{ route('wdr.admin.flight') }}">
+                                    <a class="nav-link {{ Request::is('swr/admin/flight') ? 'active' : '' }}"
+                                        href="{{ route('swr.admin.flight') }}">
                                         <div class="d-flex align-items-center">
                                             <span class="nav-link-text">Flights</span>
                                         </div>
@@ -90,47 +90,47 @@
                         <!-- parent pages-->
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::is('wdr/setting/event') ? 'active' : '' }}"
-                            href="{{ route('wdr.setting.event') }}">
+                        <a class="nav-link {{ Request::is('swr/setting/event') ? 'active' : '' }}"
+                            href="{{ route('swr.setting.event') }}">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-text">Event</span>
                             </div>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ Request::is('wdr/setting/venue') ? 'active' : '' }}"
-                            href="{{ route('wdr.setting.venue') }}">
+                        <a class="nav-link {{ Request::is('swr/setting/venue') ? 'active' : '' }}"
+                            href="{{ route('swr.setting.venue') }}">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-text">Venue</span>
                             </div>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ Request::is('wdr/setting/day_type') ? 'active' : '' }}"
-                            href="{{ route('wdr.setting.day_type') }}">
+                    {{-- <li class="nav-item">
+                        <a class="nav-link {{ Request::is('swr/setting/day_type') ? 'active' : '' }}"
+                            href="{{ route('swr.setting.day_type') }}">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-text">Day Type</span>
                             </div>
                         </a>
-                    </li>
+                    </li> --}}
                     {{-- <li class="nav-item">
-                        <a class="nav-link {{ Request::is('wdr/setting/nationality') ? 'active' : '' }}"
-                            href="{{ route('wdr.setting.nationality') }}">
+                        <a class="nav-link {{ Request::is('swr/setting/nationality') ? 'active' : '' }}"
+                            href="{{ route('swr.setting.nationality') }}">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-text">Nationality</span>
                             </div>
                         </a>
                     </li> --}}
                     {{-- <li class="nav-item">
-                        <a class="nav-link {{ Request::is('wdr/setting/sizes') ? 'active' : '' }}"
-                            href="{{ route('wdr.setting.sizes') }}">
+                        <a class="nav-link {{ Request::is('swr/setting/sizes') ? 'active' : '' }}"
+                            href="{{ route('swr.setting.sizes') }}">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-text">Uniform Sizes</span>
                             </div>
                         </a>
                     </li> --}}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('wdr.setting.application') }}">
+                        <a class="nav-link" href="{{ route('swr.setting.application') }}">
                             <div class="d-flex align-items-center">
                                 <span class="nav-link-text">Application Settings</span>
                             </div>
@@ -265,7 +265,7 @@
                             </a>
                         </div>
                         <div class="nav-item-wrapper"><a
-                                class="nav-link label-1 {{ Request::is('wdr/admin/users/invite-user') }}"
+                                class="nav-link label-1 {{ Request::is('swr/admin/users/invite-user') }}"
                                 href="{{ route('admin.users.invite.form') }}" role="button" data-bs-toggle=""
                                 aria-expanded="false">
                                 <div class="d-flex align-items-center"><span class="nav-link-icon"><span

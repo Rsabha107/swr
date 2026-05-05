@@ -21,7 +21,7 @@ $(document).ready(function () {
             if (result.isConfirmed) {
                 // console.log('inside confirmed')
                 $.ajax({
-                    url: "/wdr/admin/report/delete/" + id,
+                    url: "/swr/admin/report/delete/" + id,
                     type: "DELETE",
                     headers: {
                         // "X-CSRF-TOKEN": $('input[name="_token"]').attr("value"),

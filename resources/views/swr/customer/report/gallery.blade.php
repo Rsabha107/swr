@@ -1,4 +1,4 @@
-@extends('wdr.customer.layout.template')
+@extends('swr.customer.layout.template')
 @section('main')
     <nav class="mb-3" aria-label="breadcrumb">
         <ol class="breadcrumb mb-0">

@@ -5,13 +5,12 @@ namespace App\Models\Swr;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SecondmentWeeklyReport extends Model
 {
-    use SoftDeletes;
     
     protected $fillable = [
+        'reference_number',
         'user_id',
         'event_id',
         'venue_id',
@@ -58,7 +57,7 @@ class SecondmentWeeklyReport extends Model
      */
     public function event(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Wdr\Event::class);
+        return $this->belongsTo(\App\Models\Swr\Event::class);
     }
 
     /**
@@ -66,7 +65,7 @@ class SecondmentWeeklyReport extends Model
      */
     public function venue(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Wdr\Venue::class);
+        return $this->belongsTo(\App\Models\Swr\Venue::class);
     }
 
     /**
