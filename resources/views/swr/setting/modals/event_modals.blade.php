@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form novalidate="" class="modal-content form-submit-event needs-validation" id="form_submit_event"
-                action="{{ route('wdr.setting.event.store') }}" method="POST">
+                action="{{ route('swr.setting.event.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="table" value="event_table">
                 <div class="modal-body">
@@ -52,7 +52,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form novalidate="" class="modal-content form-submit-event needs-validation" id="edit_form_submit_event"
-                action="{{ route('wdr.setting.event.update') }}" method="POST" enctype="multipart/form-data">
+                action="{{ route('swr.setting.event.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" id="edit_event_id" name="id" value="">
                 <input type="hidden" id="edit_event_table" name="table" value='event_table'>

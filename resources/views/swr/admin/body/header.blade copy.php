@@ -27,16 +27,16 @@
             <a class="navbar-brand me-1 me-sm-3" href="{{ route('home') }}">
                 <div class="d-flex align-items-center">
                     <div class="d-flex align-items-center">
-                        <img src="{{ asset('assets/img/icons/wdr.jpg') }}" alt="{{ __('wdr.page_title') }}"
+                        <img src="{{ asset('assets/img/icons/swr.jpg') }}" alt="{{ __('swr.page_title') }}"
                             width="27" />
 
                         {{-- @if ($session_set) --}}
-                        <h3 class="logo-text ms-2 d-none d-sm-block">{{ __('wdr.page_title') }} </h3>
+                        <h3 class="logo-text ms-2 d-none d-sm-block">{{ __('swr.page_title') }} </h3>
                         <div class="theme-control-toggle fa-icon-wait px-2 d-none d-sm-block">
                             <h6 class="mt-2 d-sm-block d-none text-primary">({{ $event->name }})</h6>
                         </div>
                         {{-- @else
-                        <h6 class="logo-text ms-2 d-none d-sm-block">{{ __('wdr.page_title') }}</h6>
+                        <h6 class="logo-text ms-2 d-none d-sm-block">{{ __('swr.page_title') }}</h6>
                             @endif --}}
                         {{-- <div class="theme-control-toggle fa-icon-wait px-2">
                             <h6 class="mt-2">({{ $event->name }})</h6>

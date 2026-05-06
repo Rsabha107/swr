@@ -1,4 +1,4 @@
-@extends('wdr.layout.admin_template')
+@extends('swr.layout.admin_template')
 @section('main')
 
 <div class="d-flex justify-content-between m-2">
@@ -47,7 +47,7 @@
         </div>
         <div class="card-body p-0">
             <div class="p-4 code-to-copy">
-                <form class="row g-3  px-3 needs-validation" action="{{ route('wdr.admin.users.invite.send') }}"
+                <form class="row g-3  px-3 needs-validation" action="{{ route('swr.admin.users.invite.send') }}"
                     id="spinner-form" novalidate method="POST">
                     @csrf
 

@@ -5,7 +5,7 @@
                 <h3 class="mb-0" id="staticBackdropLabel"><?= get_label('add_venues', 'Add Venue') ?></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form novalidate="" class="modal-content form-submit-event needs-validation" id="form_submit_event" action="{{route('wdr.setting.venue.store')}}" method="POST">
+            <form novalidate="" class="modal-content form-submit-event needs-validation" id="form_submit_event" action="{{route('swr.setting.venue.store')}}" method="POST">
                 @csrf
                 <input type="hidden" name="table" value="venues_table">
                 <div class="modal-body">
@@ -36,7 +36,7 @@
                 <h3 class="mb-0" id="staticBackdropLabel">Edit</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form novalidate="" class="modal-content form-submit-event needs-validation" id="edit_form_submit_event" action="{{route('wdr.setting.venue.update')}}" method="POST">
+            <form novalidate="" class="modal-content form-submit-event needs-validation" id="edit_form_submit_event" action="{{route('swr.setting.venue.update')}}" method="POST">
                 @csrf
                 <input type="hidden" id="edit_venues_id" name="id" value="">
                 <input type="hidden" id="edit_venues_table" name="table">

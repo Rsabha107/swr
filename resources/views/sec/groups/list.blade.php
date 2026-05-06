@@ -1,5 +1,5 @@
 {{-- @extends('vapp.admin.layout.admin_template') --}}
-@extends('wdr.layout.admin_template')
+@extends('swr.layout.admin_template')
 @section('main')
 
 

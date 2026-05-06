@@ -31,14 +31,14 @@ class UserController extends Controller
         $user = User::find(Auth::user()->id);
         $file = $user->file_attach;
 
-        return view('wdr/admin/users/profile', compact('user', 'file'));
+        return view('swr/admin/users/profile', compact('user', 'file'));
     }
 
         public function showForm()
     {
         $events = Event::all();
         $functional_areas = FunctionalArea::all();
-        return view('wdr.admin.users.invite-user', compact('events', 'functional_areas'));
+        return view('swr.admin.users.invite-user', compact('events', 'functional_areas'));
     }
 
     public function sendInvite(Request $request)
@@ -100,7 +100,7 @@ class UserController extends Controller
 
         // Otherwise, show a creation form
         appLog('No name or email provided, redirecting to signup form.');
-        return redirect()->route('wdr.auth.signup', [
+        return redirect()->route('swr.auth.signup', [
             'name' => $request->query('name'),
             'email' => $request->query('email'),
             'event_id' => $request->query('event_id'),

@@ -5,7 +5,7 @@
                 Create day types
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form novalidate="" class="modal-content form-submit-event needs-validation" id="form_submit_event" action="{{ route('wdr.setting.day_type.store') }}" method="POST">
+            <form novalidate="" class="modal-content form-submit-event needs-validation" id="form_submit_event" action="{{ route('swr.setting.day_type.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="table" value="day_types_table">
                 <div class="modal-body">
@@ -34,7 +34,7 @@
                 <h3 class="mb-0" id="staticBackdropLabel">Edit day types</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form novalidate="" class="modal-content form-submit-event needs-validation" id="edit_form_submit_event"  action="{{ route('wdr.setting.day_type.update') }}" method="POST">
+            <form novalidate="" class="modal-content form-submit-event needs-validation" id="edit_form_submit_event"  action="{{ route('swr.setting.day_type.update') }}" method="POST">
                 @csrf
                 <input type="hidden" id="edit_day_types_id" name="id" value="">
                 <input type="hidden" id="edit_day_types_table" name="table">

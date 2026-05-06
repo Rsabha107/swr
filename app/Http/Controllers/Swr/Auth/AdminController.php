@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Wdr\Auth;
+namespace App\Http\Controllers\Swr\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\AccountCreationMail;
@@ -22,10 +22,10 @@ use App\Models\Product;
 use App\Models\SiteCategory;
 use App\Models\Site;
 use App\Models\VenueType;
-use App\Models\Wdr\Event;
-use App\Models\Wdr\Guardian;
-use App\Models\Wdr\GuardianDocument;
-use App\Models\Wdr\TempUpload;
+use App\Models\Swr\Event;
+use App\Models\Swr\Guardian;
+use App\Models\Swr\GuardianDocument;
+use App\Models\Swr\TempUpload;
 use App\Models\Task;
 use App\Models\Vapp\FunctionalArea;
 use App\Notifications\EmailOtpVerification;

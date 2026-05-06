@@ -1,4 +1,4 @@
-@extends('wdr.layout.admin_template')
+@extends('swr.layout.admin_template')
 @section('main')
 
     <form method="POST" action="{{ route('admin.signup.ms.store') }}" class="forms-sample">

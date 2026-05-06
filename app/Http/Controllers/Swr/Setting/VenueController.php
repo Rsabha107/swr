@@ -21,7 +21,7 @@ class VenueController extends Controller
         $venues = Venue::all();
         $events = Event::all();
         // $locations = Location::all();
-        return view('wdr.setting.venue.list', [
+        return view('swr.setting.venue.list', [
             'venues' => $venues,
             'events' => $events,
             // 'locations' => $locations,

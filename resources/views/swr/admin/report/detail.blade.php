@@ -1,4 +1,4 @@
-@extends('wdr.layout.admin_template')
+@extends('swr.layout.admin_template')
 
 @section('title', 'Report Details - Admin View')
 

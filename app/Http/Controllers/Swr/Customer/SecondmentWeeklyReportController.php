@@ -42,13 +42,40 @@ class SecondmentWeeklyReportController extends Controller
                     ->from('venue_event')
                     ->where('event_id', $event_id);
             })
-            ->select('venues.id', 'venues.title', 'venues.city')
+            ->select('venues.id', 'venues.title')
             ->orderBy('venues.title')
             ->get();
 
         return response()->json($venues);
     }
 
+        public function pickEvent(Request $request)
+    {
+        // $events = Event::all();
+        // $this->switch($request->event_id);
+        // return view('vapp.admin.booking.pick', compact('events'));
+        if ($request->event_id) {
+            // appLog('Event ID: ' . $request->event_id);
+            if (Event::findOrFail($request->event_id) && !session()->has('EVENT_ID')) {
+                // appLog('Inside if statement Event ID: ' . $request->event_id);
+
+                session()->put('EVENT_ID', $request->event_id);
+                session()->put('VENUE_ID', $request->venue_id);
+                // appLog('session EVENT_ID: ' . session()->get('EVENT_ID'));
+                // appLog('before redirect');
+                // return redirect()->route('tracki.project.show.card')->with('message', 'Workspace switched successfully.');
+                return redirect()->route('swr.report')->with('message', 'Event Switched.');
+                // return back()->with('message', 'Event Switched.');
+            }
+        }
+        //  else {
+        // return back()->with('error', 'Workspace not found.');
+        // return redirect()->route('tracki.project.show.card')->with('error', 'Workspace not found.');
+        // appLog('event_id is null');
+        return redirect()->route('swr.report')->with('error', 'Event not found.');
+        // }
+    }
+    
     /**
      * Show the form for creating a new secondment weekly report
      */

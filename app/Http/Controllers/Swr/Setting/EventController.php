@@ -22,7 +22,7 @@ class EventController extends Controller
     {
         $statuses = Event::all();
         $venues = Venue::all();
-        return view('wdr.setting.event.list', [
+        return view('swr.setting.event.list', [
             'statuses' => $statuses,
             'venues' => $venues,
         ]);
@@ -72,7 +72,7 @@ class EventController extends Controller
                 'delete_url' => route('event.docs.destroy', $d->id),
             ]);
 
-        return response()->json(['op' => $op, 'venues' => $op->venues, 'event_docs' => $docs, 'image_path' => route('wdr.setting.event.file', $op->id)]);
+        return response()->json(['op' => $op, 'venues' => $op->venues, 'event_docs' => $docs, 'image_path' => route('swr.setting.event.file', $op->id)]);
         // return response()->json(['op' => $op, 'venues' => $op->venues, 'image_path' => $image_path]);
     }
 
@@ -97,7 +97,7 @@ class EventController extends Controller
 
             if ($op->event_logo) {
                 // if ($op->event_logo && file_exists(storage_path('app/private/uploads/events/' . $op->id . '/logo/' . $op->event_logo))) {
-                $route_image = route('wdr.setting.event.file', $op->id);
+                $route_image = route('swr.setting.event.file', $op->id);
                 $image = ' <div class="avatar avatar-m">
                                 <a  href="#" role="button" id="editEvents" data-id=' . $op->id . ' data-table="event_table">
                                     <img class="rounded-circle pull-up" src="' . $route_image . '" alt="" />

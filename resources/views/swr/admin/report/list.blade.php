@@ -20,7 +20,7 @@
             {{-- <x-button_insert_js title='Add participant' selectionId="offcanvas-add-participant" dataId="{{ session()->get('EVENT_ID') }}"
                 table="participant_table" /> --}}
             <button class="btn px-3 btn-phoenix-secondary" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#wdrfilterOffcanvas" aria-haspopup="true" aria-expanded="false"
+                data-bs-target="#swrfilterOffcanvas" aria-haspopup="true" aria-expanded="false"
                 data-bs-reference="parent"><svg class="svg-inline--fa fa-filter" data-fa-transform="down-3"
                     aria-hidden="true" focusable="false" data-prefix="fas" data-icon="filter" role="img"
                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""

@@ -1,4 +1,4 @@
-@extends('wdr.layout.admin_template')
+@extends('swr.layout.admin_template')
 @section('main')
     <!-- ===============================================-->
     <!--    Main Content-->
@@ -26,12 +26,12 @@
     <x-setting.event-card />
     {{-- </div> --}}
 
-    @include('wdr.setting.modals.event_modals')
-    <script src="{{ asset('assets/js/pages/wdr/events_upload.js') }}"></script>
-    {{-- <script src="{{ asset('assets/js/pages/wdr/events_dz_upload.js') }}"></script> --}}
-    {{-- <script src="{{ asset('assets/js/pages/wdr/events_upload_min.js') }}"></script> --}}
+    @include('swr.setting.modals.event_modals')
+    <script src="{{ asset('assets/js/pages/swr/events_upload.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/pages/swr/events_dz_upload.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/pages/swr/events_upload_min.js') }}"></script> --}}
 
-    <script src="{{ asset('assets/js/pages/wdr/events.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/swr/events.js') }}"></script>
 
     <script>
         var label_update = '<?= get_label('update', 'Update') ?>';
@@ -44,11 +44,11 @@
 
 @push('script')
 
-    {{-- <script src="{{ asset('assets/js/pages/wdr/events_upload.js') }}"></script> --}}
-    {{-- <script src="{{ asset('assets/js/pages/wdr/events_dz_upload.js') }}"></script> --}}
-    {{-- <script src="{{ asset('assets/js/pages/wdr/events_upload_min.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/pages/swr/events_upload.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/pages/swr/events_dz_upload.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/pages/swr/events_upload_min.js') }}"></script> --}}
 
-    {{-- <script src="{{ asset('assets/js/pages/wdr/events.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/js/pages/swr/events.js') }}"></script> --}}
 
     {{-- <script>
         // showing the offcanvas for the task creation

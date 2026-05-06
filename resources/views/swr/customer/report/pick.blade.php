@@ -1,4 +1,4 @@
-@extends('wdr.customer.layout.template')
+@extends('swr.customer.layout.template')
 @section('main')
     <div class="px-3">
         <div class="row min-vh-100 flex-center p-5">
@@ -23,7 +23,7 @@
                             $user_venues = $user_venues->where('active_flag', 1)->sortBy('title');
                         @endphp
                         <div data-list='{"valueNames":["title"]}'>
-                            <form class="position-relative" action="{{ route('wdr.customer.report.event.switch') }}"
+                            <form class="position-relative" action="{{ route('swr.customer.report.event.switch') }}"
                                 method="POST" id="spinner-form">
                                 @csrf
                                 <select class="form-select mb-3" name="event_id" id="event_id" required>
@@ -48,14 +48,14 @@
                             </form>
                         </div>
                         <div class="d-flex justify-content-center mt-3">
-                            <a class="btn btn-sm btn btn-purple text-white" href="{{ route('wdr.logout') }}">Logout</a>
+                            <a class="btn btn-sm btn btn-purple text-white" href="{{ route('swr.logout') }}">Logout</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="{{ asset('assets/js/pages/wdr/pick.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/swr/pick.js') }}"></script>
 @endsection
 
 @push('script')

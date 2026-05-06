@@ -1,4 +1,4 @@
-@extends('wdr.layout.admin_template')
+@extends('swr.layout.admin_template')
 {{-- @extends('mds.admin.layout.admin_dashboard_template') --}}
 @section('main')
     <!-- ===============================================-->

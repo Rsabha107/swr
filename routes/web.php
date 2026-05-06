@@ -20,6 +20,7 @@ use App\Http\Controllers\Swr\Admin\DashboardController;
 use App\Http\Controllers\Swr\Admin\ImportExportController;
 use App\Http\Controllers\Swr\Admin\WorkforceDailyReportController as AdminWorkforceDailyReportController;
 use App\Http\Controllers\Swr\Admin\WorkforceReportDocumentController;
+use App\Http\Controllers\Swr\Customer\SecondmentWeeklyReportController;
 use App\Http\Controllers\Swr\Customer\WorkforceDailyReportController;
 use App\Http\Controllers\Swr\Setting\AppSettingController;
 use App\Http\Controllers\Swr\Setting\DayTypeController;
@@ -112,10 +113,10 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer', 'role:SuperAdmi
 
     Route::controller(AdminUserController::class)->group(function () {
         // Route::get('/vapp/admin/users/profile', 'profile')->name('vapp.admin.users.profile');
-        Route::post('/wdr/admin/users/profile/update', 'update')->name('wdr.admin.users.profile.update');
-        Route::post('/wdr/admin/users/profile/password/update', 'updatePassword')->name('wdr.admin.users.profile.password.update');
-        Route::get('/wdr/admin/users/invite-user', 'showForm')->name('wdr.admin.users.invite.form');
-        Route::post('/wdr/invite-user', 'sendInvite')->name('wdr.admin.users.invite.send');
+        Route::post('/swr/admin/users/profile/update', 'update')->name('swr.admin.users.profile.update');
+        Route::post('/swr/admin/users/profile/password/update', 'updatePassword')->name('swr.admin.users.profile.password.update');
+        Route::get('/swr/admin/users/invite-user', 'showForm')->name('swr.admin.users.invite.form');
+        Route::post('/swr/invite-user', 'sendInvite')->name('swr.admin.users.invite.send');
     });
 
     //Application Setting
@@ -190,20 +191,20 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer',  'role:Customer
 
 
 // Customer Pick an event
-Route::get('/wdr/customer/report/pick', function () {
-    return view('/wdr/customer/report/pick');
-})->name('wdr.customer.report.pick')->middleware('role:Customer');
-Route::post('/wdr/customer/events/switch', [WorkforceDailyReportController::class, 'pickEvent'])->name('wdr.customer.report.event.switch')->middleware('role:Customer');
+Route::get('/swr/customer/report/pick', function () {
+    return view('/swr/customer/report/pick');
+})->name('swr.customer.report.pick')->middleware('role:Customer');
+Route::post('/swr/customer/events/switch', [SecondmentWeeklyReportController::class, 'pickEvent'])->name('swr.customer.report.event.switch')->middleware('role:Customer');
 
-Route::get('/wdr/logout', [WdrAuthAdminController::class, 'logout'])->name('wdr.logout');
+Route::get('/swr/logout', [WdrAuthAdminController::class, 'logout'])->name('swr.logout');
 
 
 // ****************** ADMIN *********************
 Route::group(['middleware' => 'prevent-back-history'], function () {
 
     // Add User
-    Route::get('/wdr/auth/signup', [WdrAuthAdminController::class, 'signUp'])->name('auth.signup')->middleware('signed');
-    Route::post('/signup/store', [UserController::class, 'store'])->name('admin.signup.store');
+    Route::get('/swr/auth/signup', [WdrAuthAdminController::class, 'signUp'])->name('auth.signup')->middleware('signed');
+    Route::post('/swr/signup/store', [UserController::class, 'store'])->name('admin.signup.store');
 
     // Add User
     Route::get('/register/{event_id}', [WdrAuthAdminController::class, 'register'])->name('auth.register');
