@@ -72,6 +72,7 @@ Route::middleware(['auth', 'otp', 'mutli.event', 'XssSanitizer',  'role:Customer
     Route::controller(SecondmentWeeklyReportController::class)->group(function () {
         Route::get('/swr/report', 'index')->name('swr.report');
         Route::get('/swr/report/list', 'list')->name('swr.report.list');
+        Route::post('/swr/report/export', 'export')->name('swr.report.export');
         Route::get('/swr/report/create', 'create')->name('swr.report.create');
         Route::post('/swr/report/store', 'store')->name('swr.report.store');
         Route::get('/swr/report/detail/{id}', 'detail')->name('swr.report.detail');

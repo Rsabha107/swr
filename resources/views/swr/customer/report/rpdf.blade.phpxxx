@@ -221,6 +221,12 @@
                             <span class="badge">{{ $pivot->functionalArea?->title ?? 'N/A' }}</span>
                         @endforeach
                     </div>
+                    @if($report->innovationFunctionalAreas->where('functionalArea.fa_code', 'OTH')->count() && $report->innovation_other_area)
+                        <div style="margin-top: 10px;">
+                            <strong>Other Area Specified:</strong>
+                            <div class="long-text">{{ $report->innovation_other_area }}</div>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -244,6 +250,12 @@
                             <span class="badge">{{ $pivot->functionalArea?->title ?? 'N/A' }}</span>
                         @endforeach
                     </div>
+                    @if($report->challengeFunctionalAreas->where('functionalArea.fa_code', 'OTH')->count() && $report->challenges_other_area)
+                        <div style="margin-top: 10px;">
+                            <strong>Other Area Specified:</strong>
+                            <div class="long-text">{{ $report->challenges_other_area }}</div>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>

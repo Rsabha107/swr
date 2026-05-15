@@ -17,7 +17,7 @@
 @else
 @php
     // Priority: old input → passed value → null
-    $currentValue = old($id);
+    $currentValue = old($id) ?? $inputValue ?? null;
 @endphp
  <div class="mb-3 choices-lg">
     <label class="{{ $classLabel }}" for="{{ $id }}">{{ $label }}</label>

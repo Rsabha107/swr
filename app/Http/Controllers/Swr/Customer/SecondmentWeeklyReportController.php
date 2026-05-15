@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SecondmentWeeklyReportExport;
 
 class SecondmentWeeklyReportController extends Controller
 {
@@ -92,6 +94,9 @@ class SecondmentWeeklyReportController extends Controller
                     ->where('event_id', $event->id);
             })->get();
 
+        // Auto-select venue if user has only one venue assigned
+        $defaultVenueId = $venues->count() === 1 ? $venues->first()->id : old('venue_id');
+
         // Fetch functional areas from database
         $functionalAreas = FunctionalArea::orderBy('title')->get();
 
@@ -107,6 +112,7 @@ class SecondmentWeeklyReportController extends Controller
         return view('swr.customer.report.create', compact(
             'event',
             'venues',
+            'defaultVenueId',
             'user',
             'functionalAreas',
             'supportTypes'
@@ -151,7 +157,7 @@ class SecondmentWeeklyReportController extends Controller
     public function store(Request $request)
     {
         Log::info('Storing Secondment Weekly Report', ['user_id' => Auth::id()]);
-
+        Log::info('Request data', $request->all());
         $user = Auth::user();
 
         $validated = $request->validate([
@@ -159,9 +165,9 @@ class SecondmentWeeklyReportController extends Controller
             'venue_id' => 'required|exists:venues,id',
 
             // Basic Information
-            'name' => 'nullable|string|max:255',
-            'role' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'role' => 'required|string|max:255',
+            // 'city' => 'required|string|max:255',
 
             // Weekly Activities
             'main_activities' => 'required|string|max:5000',
@@ -207,9 +213,11 @@ class SecondmentWeeklyReportController extends Controller
 
         DB::transaction(function () use ($request, $validated, $user, &$report, &$seq) {
             // Debug logging
-            Log::info('SWR Store - Challenges Functional Areas', [
+            Log::info('SWR Store - Functional Areas', [
                 'challenges_functional_areas' => $validated['challenges_functional_areas'] ?? [],
                 'innovation_functional_areas' => $validated['innovation_functional_areas'] ?? [],
+                'innovation_other_area' => $validated['innovation_other_area'] ?? 'NOT PROVIDED',
+                'challenges_other_area' => $validated['challenges_other_area'] ?? 'NOT PROVIDED',
             ]);
 
             $seq = nextSequence('swr');
@@ -225,11 +233,13 @@ class SecondmentWeeklyReportController extends Controller
                     : null,
                 'name' => $validated['name'] ?? $user->name,
                 'role' => $validated['role'],
-                'city' => $validated['city'],
+                // 'city' => $validated['city'],
                 'main_activities' => $validated['main_activities'],
                 'experience_gained' => $validated['experience_gained'],
                 'innovation_description' => $validated['innovation_description'],
+                'innovation_other_area' => $validated['innovation_other_area'] ?? null,
                 'challenges_description' => $validated['challenges_description'],
+                'challenges_other_area' => $validated['challenges_other_area'] ?? null,
                 'challenges_resolved' => $validated['challenges_resolved'] === 'yes',
                 'value_for_qatar' => $validated['value_for_qatar'] === 'yes',
                 'value_for_qatar_type' => $validated['value_for_qatar_type'] ?? null,
@@ -237,6 +247,7 @@ class SecondmentWeeklyReportController extends Controller
                 'wellbeing_status' => $validated['wellbeing_status'],
                 'needs_support' => $validated['needs_support'] === 'yes',
                 'support_types' => !empty($validated['support_types']) ? $validated['support_types'] : null,
+                'support_other_description' => $validated['support_other_description'] ?? null,
                 'additional_comment' => $validated['additional_comment'] ?? null,
                 'status' => 'draft',
             ]);
@@ -418,7 +429,9 @@ class SecondmentWeeklyReportController extends Controller
                 'main_activities' => Str::limit($report->main_activities ?? 'N/A', 50),
                 'experience_gained' => Str::limit($report->experience_gained ?? 'N/A', 50),
                 'innovation_description' => Str::limit($report->innovation_description ?? 'N/A', 50),
+                'innovation_other_area' => $report->innovation_other_area ?? 'N/A',
                 'challenges_description' => Str::limit($report->challenges_description ?? 'N/A', 50),
+                'challenges_other_area' => $report->challenges_other_area ?? 'N/A',
                 'challenges_resolved' => $report->challenges_resolved ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-danger">No</span>',
                 'wellbeing_status' => $report->getWellbeingEmoji() . ' ' . ($report->wellbeing_status ?? 'N/A'),
                 'needs_support' => $report->needs_support ? '<span class="badge bg-warning">Yes</span>' : '<span class="badge bg-secondary">No</span>',
@@ -434,6 +447,28 @@ class SecondmentWeeklyReportController extends Controller
             'rows' => $rows->items(),
             'total' => $total,
         ]);
+    }
+
+    /**
+     * Export filtered reports to Excel
+     */
+    public function export(Request $request)
+    {
+        Log::info('Exporting Secondment Weekly Reports for user: ' . auth()->user()->name);
+        Log::info($request->all());
+
+        $filters = $request->only([
+            'export_event_filter',
+            'export_venue_filter',
+            'export_date_range_filter',
+        ]);
+
+        Log::info('Filters applied: ' . json_encode($filters));
+
+        return Excel::download(
+            new SecondmentWeeklyReportExport($filters), 
+            'secondment_weekly_reports_' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 
     /**
@@ -511,110 +546,112 @@ class SecondmentWeeklyReportController extends Controller
     /**
      * Update a secondment weekly report
      */
-    public function update(Request $request, $id)
-    {
-        $report = SecondmentWeeklyReport::findOrFail($id);
-        $this->authorize('update', $report);
+    // public function update(Request $request, $id)
+    // {
+    //     $report = SecondmentWeeklyReport::findOrFail($id);
+    //     $this->authorize('update', $report);
 
-        Log::info('Updating Secondment Weekly Report', ['report_id' => $id, 'user_id' => Auth::id()]);
+    //     Log::info('Updating Secondment Weekly Report', ['report_id' => $id, 'user_id' => Auth::id()]);
 
-        $validated = $request->validate([
-            'reporting_week' => 'required|date',
-            'venue_id' => 'required|exists:venues,id',
-            'event_id' => 'required|exists:events,id',
+    //     $validated = $request->validate([
+    //         'reporting_week' => 'required|date',
+    //         'venue_id' => 'required|exists:venues,id',
+    //         'event_id' => 'required|exists:events,id',
 
-            // Basic Information
-            'name' => 'nullable|string|max:255',
-            'role' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
+    //         // Basic Information
+    //         'name' => 'nullable|string|max:255',
+    //         'role' => 'nullable|string|max:255',
+    //         'city' => 'nullable|string|max:255',
 
-            // Weekly Activities
-            'main_activities' => 'required|string|max:5000',
+    //         // Weekly Activities
+    //         'main_activities' => 'required|string|max:5000',
 
-            // Gained Experience
-            'experience_gained' => 'required|string|max:5000',
+    //         // Gained Experience
+    //         'experience_gained' => 'required|string|max:5000',
 
-            // Innovation
-            'innovation_description' => 'required|string|max:5000',
-            'innovation_functional_areas' => 'nullable|array',
-            'innovation_functional_areas.*' => 'exists:functional_areas,id',
+    //         // Innovation
+    //         'innovation_description' => 'required|string|max:5000',
+    //         'innovation_functional_areas' => 'nullable|array',
+    //         'innovation_functional_areas.*' => 'exists:functional_areas,id',
 
-            // Challenges
-            'challenges_description' => 'required|string|max:5000',
-            'challenges_resolved' => 'required|in:0,1',
-            'challenges_functional_areas' => 'nullable|array',
-            'challenges_functional_areas.*' => 'exists:functional_areas,id',
+    //         // Challenges
+    //         'challenges_description' => 'required|string|max:5000',
+    //         'challenges_resolved' => 'required|in:0,1',
+    //         'challenges_functional_areas' => 'nullable|array',
+    //         'challenges_functional_areas.*' => 'exists:functional_areas,id',
 
-            // Value for Qatar
-            'value_for_qatar' => 'required|in:0,1',
-            'value_for_qatar_type' => 'nullable|string|max:255',
-            'value_for_qatar_description' => 'nullable|string|max:5000',
+    //         // Value for Qatar
+    //         'value_for_qatar' => 'required|in:0,1',
+    //         'value_for_qatar_type' => 'nullable|string|max:255',
+    //         'value_for_qatar_description' => 'nullable|string|max:5000',
 
-            // HR / Wellbeing
-            'wellbeing_status' => 'required|in:Good,Moderate,Challenging',
-            'needs_support' => 'required|in:0,1',
-            'support_types' => 'nullable|array',
-            'support_types.*' => 'string',
+    //         // HR / Wellbeing
+    //         'wellbeing_status' => 'required|in:Good,Moderate,Challenging',
+    //         'needs_support' => 'required|in:0,1',
+    //         'support_types' => 'nullable|array',
+    //         'support_types.*' => 'string',
 
-            // Additional Comment
-            'additional_comment' => 'nullable|string|max:2000',
+    //         // Additional Comment
+    //         'additional_comment' => 'nullable|string|max:2000',
 
-            // Status
-            'status' => 'required|in:draft,submitted',
-        ]);
+    //         // Status
+    //         'status' => 'required|in:draft,submitted',
+    //     ]);
 
-        DB::transaction(function () use ($report, $validated, $request) {
-            // Update the report
-            $report->update([
-                'reporting_week' => $validated['reporting_week'],
-                'event_id' => $validated['event_id'],
-                'venue_id' => $validated['venue_id'],
-                'name' => $validated['name'] ?? Auth::user()->name,
-                'role' => $validated['role'],
-                'city' => $validated['city'],
-                'main_activities' => $validated['main_activities'],
-                'experience_gained' => $validated['experience_gained'],
-                'innovation_description' => $validated['innovation_description'],
-                'challenges_description' => $validated['challenges_description'],
-                'challenges_resolved' => $validated['challenges_resolved'] == 1,
-                'value_for_qatar' => $validated['value_for_qatar'] == 1,
-                'value_for_qatar_type' => $validated['value_for_qatar_type'] ?? null,
-                'value_for_qatar_description' => $validated['value_for_qatar_description'] ?? null,
-                'wellbeing_status' => $validated['wellbeing_status'],
-                'needs_support' => $validated['needs_support'] == 1,
-                'support_types' => $validated['support_types'] ?? null,
-                'additional_comment' => $validated['additional_comment'] ?? null,
-                'status' => $validated['status'],
-            ]);
+    //     DB::transaction(function () use ($report, $validated, $request) {
+    //         // Update the report
+    //         $report->update([
+    //             'reporting_week' => $validated['reporting_week'],
+    //             'event_id' => $validated['event_id'],
+    //             'venue_id' => $validated['venue_id'],
+    //             'name' => $validated['name'] ?? Auth::user()->name,
+    //             'role' => $validated['role'],
+    //             'city' => $validated['city'],
+    //             'main_activities' => $validated['main_activities'],
+    //             'experience_gained' => $validated['experience_gained'],
+    //             'innovation_description' => $validated['innovation_description'],
+    //             'challenges_description' => $validated['challenges_description'],
+    //             'innovation_other_area' => $report->innovation_other_area ?? 'N/A',
 
-            // Delete and recreate innovation functional areas
-            \App\Models\Swr\SecondmentWeeklyReportInnovationFunctionalArea::where('secondment_weekly_report_id', $report->id)->delete();
-            if (!empty($validated['innovation_functional_areas'])) {
-                foreach ($validated['innovation_functional_areas'] as $area_id) {
-                    \App\Models\Swr\SecondmentWeeklyReportInnovationFunctionalArea::create([
-                        'secondment_weekly_report_id' => $report->id,
-                        'functional_area_id' => $area_id,
-                    ]);
-                }
-            }
+    //             'challenges_resolved' => $validated['challenges_resolved'] == 1,
+    //             'value_for_qatar' => $validated['value_for_qatar'] == 1,
+    //             'value_for_qatar_type' => $validated['value_for_qatar_type'] ?? null,
+    //             'value_for_qatar_description' => $validated['value_for_qatar_description'] ?? null,
+    //             'wellbeing_status' => $validated['wellbeing_status'],
+    //             'needs_support' => $validated['needs_support'] == 1,
+    //             'support_types' => $validated['support_types'] ?? null,
+    //             'additional_comment' => $validated['additional_comment'] ?? null,
+    //             'status' => $validated['status'],
+    //         ]);
 
-            // Delete and recreate challenge functional areas
-            \App\Models\Swr\SecondmentWeeklyReportChallengeFunctionalArea::where('secondment_weekly_report_id', $report->id)->delete();
-            if (!empty($validated['challenges_functional_areas'])) {
-                foreach ($validated['challenges_functional_areas'] as $area_id) {
-                    \App\Models\Swr\SecondmentWeeklyReportChallengeFunctionalArea::create([
-                        'secondment_weekly_report_id' => $report->id,
-                        'functional_area_id' => $area_id,
-                    ]);
-                }
-            }
+    //         // Delete and recreate innovation functional areas
+    //         \App\Models\Swr\SecondmentWeeklyReportInnovationFunctionalArea::where('secondment_weekly_report_id', $report->id)->delete();
+    //         if (!empty($validated['innovation_functional_areas'])) {
+    //             foreach ($validated['innovation_functional_areas'] as $area_id) {
+    //                 \App\Models\Swr\SecondmentWeeklyReportInnovationFunctionalArea::create([
+    //                     'secondment_weekly_report_id' => $report->id,
+    //                     'functional_area_id' => $area_id,
+    //                 ]);
+    //             }
+    //         }
 
-            Log::info('Secondment Weekly Report updated', ['report_id' => $report->id, 'user_id' => Auth::id()]);
-        });
+    //         // Delete and recreate challenge functional areas
+    //         \App\Models\Swr\SecondmentWeeklyReportChallengeFunctionalArea::where('secondment_weekly_report_id', $report->id)->delete();
+    //         if (!empty($validated['challenges_functional_areas'])) {
+    //             foreach ($validated['challenges_functional_areas'] as $area_id) {
+    //                 \App\Models\Swr\SecondmentWeeklyReportChallengeFunctionalArea::create([
+    //                     'secondment_weekly_report_id' => $report->id,
+    //                     'functional_area_id' => $area_id,
+    //                 ]);
+    //             }
+    //         }
 
-        return redirect()->route('swr.report.detail', $report->id)
-            ->with(['type' => 'success', 'message' => 'Report updated successfully!']);
-    }
+    //         Log::info('Secondment Weekly Report updated', ['report_id' => $report->id, 'user_id' => Auth::id()]);
+    //     });
+
+    //     return redirect()->route('swr.report.detail', $report->id)
+    //         ->with(['type' => 'success', 'message' => 'Report updated successfully!']);
+    // }
 
     /**
      * Switch between events

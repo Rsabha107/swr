@@ -26,19 +26,20 @@
                             <th data-field="ref_number" data-class="text-col-center">Reference Number</th>
                             <th data-field="name" data-class="text-col-center">Name</th>
                             <th data-field="role" data-class="text-col-center">Role</th>
-                            <th data-field="city" data-class="text-col-center">City</th>
                             <th data-field="venue_id" data-class="text-col-center">Venue</th>
-                            <th data-field="reporting_week" data-class="text-col-center">Reporting Week</th>
-                            <th data-field="event_id" data-class="text-col-center">Event</th>
-                            <th data-field="main_activities" data-class="text-col-center">Main Activities</th>
-                            <th data-field="experience_gained" data-class="text-col-center">Experience Gained</th>
-                            <th data-field="innovation_description" data-class="text-col-center">Innovation</th>
-                            <th data-field="challenges_description" data-class="text-col-center">Challenges</th>
-                            <th data-field="challenges_resolved" data-class="text-col-center">Resolved</th>
-                            <th data-field="wellbeing_status" data-class="text-col-center">Wellbeing Status</th>
-                            <th data-field="needs_support" data-class="text-col-center">Needs Support</th>
+                            <th data-field="reporting_week" data-class="text-col-center">Reporting Day</th>
+                            <th data-field="event_id" data-class="text-col-center" data-visible="false">Event</th>
+                            <th data-field="main_activities" data-class="text-col-center" data-visible="false">Main Activities</th>
+                            <th data-field="experience_gained" data-class="text-col-center" data-visible="false">Experience Gained</th>
+                            <th data-field="innovation_description" data-class="text-col-center" data-visible="false">Innovation</th>
+                            <th data-field="innovation_other_area" data-class="text-col-center" data-visible="false">Innovation Other Area</th>
+                            <th data-field="challenges_description" data-class="text-col-center" data-visible="false">Challenges</th>
+                            <th data-field="challenges_other_area" data-class="text-col-center" data-visible="false">Challenges Other Area</th>
+                            <th data-field="challenges_resolved" data-class="text-col-center" data-visible="false">Resolved</th>
+                            <th data-field="wellbeing_status" data-class="text-col-center" data-visible="false">Wellbeing Status</th>
+                            <th data-field="needs_support" data-class="text-col-center" data-visible="false">Needs Support</th>
                             <th data-field="value_for_qatar" data-class="text-col-center">Value for Qatar</th>
-                            <th data-field="status" data-class="text-col-center">Status</th>
+                            <th data-field="status" data-class="text-col-center" data-visible="false">Status</th>
                             <th data-field="created_at" data-visible="false">Created At</th>
                             <th data-field="updated_at" data-visible="false">Updated At</th>
 

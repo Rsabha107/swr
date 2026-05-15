@@ -32,7 +32,20 @@ class SecondmentWeeklyDocumentController extends Controller
         foreach ($report->documents as $doc) {
             if ($doc->mime_type && str_starts_with($doc->mime_type, 'image/')) {
                 $content = Storage::disk($doc->disk)->get($doc->file_path);
-                $zip->addFromString($doc->description ?? $doc->original_name ?? basename($doc->file_path), $content);
+                
+                // Get the file extension
+                $extension = pathinfo($doc->file_name ?? $doc->original_name ?? $doc->file_path, PATHINFO_EXTENSION);
+                
+                // Get the base name (prioritize description, then original_name, then file_name)
+                $baseName = $doc->description ?? $doc->original_name ?? pathinfo($doc->file_name ?? basename($doc->file_path), PATHINFO_FILENAME);
+                
+                // Ensure the filename has an extension
+                $fileName = $baseName;
+                if ($extension && !str_ends_with(strtolower($fileName), '.' . strtolower($extension))) {
+                    $fileName .= '.' . $extension;
+                }
+                
+                $zip->addFromString($fileName, $content);
             }
         }
 

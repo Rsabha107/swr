@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,46 +11,55 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: Arial, sans-serif;
             font-size: 11px;
             line-height: 1.5;
             color: #333;
         }
+
         .container {
             width: 100%;
             max-width: 8.5in;
             margin: 0 auto;
             padding: 20px;
         }
+
         header {
             text-align: center;
             border-bottom: 3px solid #1a3a5f;
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
+
         h1 {
             font-size: 20px;
             color: #1a3a5f;
             margin-bottom: 5px;
         }
+
         .report-meta {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
             font-size: 10px;
         }
+
         .meta-item {
             margin-right: 30px;
         }
+
         .meta-label {
             font-weight: bold;
             color: #1a3a5f;
         }
+
         .section {
             margin-bottom: 20px;
             page-break-inside: avoid;
         }
+
         .section-title {
             background: #1a3a5f;
             color: white;
@@ -58,27 +68,33 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+
         .section-content {
             padding: 0 10px;
             line-height: 1.6;
         }
+
         .info-row {
             display: flex;
             margin-bottom: 8px;
         }
+
         .info-label {
             font-weight: bold;
             width: 30%;
             color: #1a3a5f;
         }
+
         .info-value {
             width: 70%;
             word-wrap: break-word;
         }
+
         .badges {
             margin-top: 5px;
             margin-bottom: 5px;
         }
+
         .badge {
             display: inline-block;
             background: #e8eef5;
@@ -88,30 +104,37 @@
             margin-bottom: 3px;
             font-size: 9px;
         }
+
         .status-approved {
             background: #d4edda;
             border-left-color: #28a745;
         }
+
         .status-submitted {
             background: #d1ecf1;
             border-left-color: #17a2b8;
         }
+
         .status-rejected {
             background: #f8d7da;
             border-left-color: #dc3545;
         }
+
         .wellbeing-good {
             background: #d4edda;
             color: #155724;
         }
+
         .wellbeing-moderate {
             background: #fff3cd;
             color: #856404;
         }
+
         .wellbeing-challenging {
             background: #f8d7da;
             color: #721c24;
         }
+
         .footer {
             border-top: 1px solid #ddd;
             padding-top: 10px;
@@ -120,30 +143,36 @@
             font-size: 9px;
             color: #666;
         }
+
         .long-text {
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 10px 0;
         }
+
         td {
             padding: 5px;
             border: 1px solid #ddd;
         }
+
         .label-cell {
             background: #f5f5f5;
             font-weight: bold;
             width: 30%;
         }
+
         page-break {
             display: block;
             page-break-after: always;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -153,7 +182,8 @@
 
         <div class="report-meta">
             <div class="meta-item">
-                <span class="meta-label">Report Week:</span> {{ $report->reporting_week ? format_date($report->reporting_week) : 'N/A' }}
+                <span class="meta-label">Report Day:</span>
+                {{ $report->reporting_week ? format_date($report->reporting_week) : 'N/A' }}
             </div>
             <div class="meta-item">
                 <span class="meta-label">Submitted:</span> {{ format_date($report->created_at, 'Y-m-d H:i') }}
@@ -214,13 +244,21 @@
             <div class="section-content">
                 <strong>Description:</strong>
                 <div class="long-text" style="margin-bottom: 10px;">{{ $report->innovation_description }}</div>
-                @if($report->innovationFunctionalAreas->count())
+                @if ($report->innovationFunctionalAreas->count())
                     <strong>Functional Areas Impacted:</strong>
                     <div class="badges">
-                        @foreach($report->innovationFunctionalAreas as $pivot)
+                        @foreach ($report->innovationFunctionalAreas as $pivot)
                             <span class="badge">{{ $pivot->functionalArea?->title ?? 'N/A' }}</span>
                         @endforeach
                     </div>
+                    @if (
+                        $report->innovationFunctionalAreas->where('functionalArea.fa_code', 'OTH')->count() &&
+                            $report->innovation_other_area)
+                        <div style="margin-top: 10px;">
+                            <strong>Other Area Specified:</strong>
+                            <div class="long-text">{{ $report->innovation_other_area }}</div>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -237,19 +275,27 @@
                         <td>{{ $report->challenges_resolved ? 'Yes' : 'No' }}</td>
                     </tr>
                 </table>
-                @if($report->challengeFunctionalAreas->count())
+                @if ($report->challengeFunctionalAreas->count())
                     <strong>Functional Areas Impacted:</strong>
                     <div class="badges">
-                        @foreach($report->challengeFunctionalAreas as $pivot)
+                        @foreach ($report->challengeFunctionalAreas as $pivot)
                             <span class="badge">{{ $pivot->functionalArea?->title ?? 'N/A' }}</span>
                         @endforeach
                     </div>
+                    @if (
+                        $report->challengeFunctionalAreas->where('functionalArea.fa_code', 'OTH')->count() &&
+                            $report->challenges_other_area)
+                        <div style="margin-top: 10px;">
+                            <strong>Other Area Specified:</strong>
+                            <div class="long-text">{{ $report->challenges_other_area }}</div>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
 
         <!-- Value for Qatar -->
-        @if($report->value_for_qatar)
+        @if ($report->value_for_qatar)
             <div class="section">
                 <div class="section-title">VALUE FOR QATAR</div>
                 <div class="section-content">
@@ -285,19 +331,25 @@
                         <td class="label-cell">Needs Support:</td>
                         <td>{{ $report->needs_support ? 'Yes' : 'No' }}</td>
                     </tr>
-                    @if($report->support_types)
+                    @if ($report->support_types)
                         <tr>
                             <td class="label-cell" style="vertical-align: top;">Support Types:</td>
                             <td>
                                 <div class="badges">
-                                    @foreach($report->support_types as $type)
+                                    @foreach ($report->support_types as $type)
                                         <span class="badge">{{ $type }}</span>
                                     @endforeach
                                 </div>
+                                @if(in_array('Other (please specify)', $report->support_types) && $report->support_other_description)
+                                    <div style="margin-top: 10px;">
+                                        <strong>Other Support Specified:</strong>
+                                        <div class="long-text">{{ $report->support_other_description }}</div>
+                                    </div>
+                                @endif
                             </td>
                         </tr>
                     @endif
-                    @if($report->additional_comment)
+                    @if ($report->additional_comment)
                         <tr>
                             <td class="label-cell" style="vertical-align: top;">Additional Comments:</td>
                             <td>{{ $report->additional_comment }}</td>
@@ -321,27 +373,30 @@
 
                                 @if ($img)
                                     <td style="width: 33.33%; text-align: center; vertical-align: top; padding: 8px;">
-                                        <img src="{{ $img }}" style="width: 100%; max-width: 180px; height: auto; border: 1px solid #e5e7eb; padding: 4px; background: #fff;">
+                                        <img src="{{ $img }}"
+                                            style="width: 100%; max-width: 180px; height: auto; border: 1px solid #e5e7eb; padding: 4px; background: #fff;">
                                         <div style="font-size: 9px; margin-top: 4px; color: #6b7280;">
                                             {{ $doc->description ?? $doc->original_name }}
                                         </div>
                                     </td>
                                 @endif
 
-                                @if (($i + 1) % 3 === 0 && ($i + 1) < $report->documents->count())
-                                    </tr><tr>
-                                @endif
-                            @endforeach
+                                @if (($i + 1) % 3 === 0 && $i + 1 < $report->documents->count())
                         </tr>
-                    </table>
-                </div>
-            </div>
+                        <tr>
         @endif
+        @endforeach
+        </tr>
+        </table>
+    </div>
+    </div>
+    @endif
 
-        <div class="footer">
-            <p>This report was generated on {{ format_date(now(), 'Y-m-d H:i') }}</p>
-            <p>Secondment Weekly Report System</p>
-        </div>
+    <div class="footer">
+        <p>This report was generated on {{ format_date(now(), 'Y-m-d H:i') }}</p>
+        <p>Secondment Weekly Report System</p>
+    </div>
     </div>
 </body>
+
 </html>

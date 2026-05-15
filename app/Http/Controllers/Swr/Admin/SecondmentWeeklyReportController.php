@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SecondmentWeeklyReportExport;
 
 
 class SecondmentWeeklyReportController extends Controller
@@ -130,7 +132,9 @@ class SecondmentWeeklyReportController extends Controller
                 'main_activities' => Str::limit($report->main_activities ?? 'N/A', 50),
                 'experience_gained' => Str::limit($report->experience_gained ?? 'N/A', 50),
                 'innovation_description' => Str::limit($report->innovation_description ?? 'N/A', 50),
+                'innovation_other_area' => $report->innovation_other_area ?? 'N/A',
                 'challenges_description' => Str::limit($report->challenges_description ?? 'N/A', 50),
+                'challenges_other_area' => $report->challenges_other_area ?? 'N/A',
                 'challenges_resolved' => $report->challenges_resolved ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-danger">No</span>',
                 'wellbeing_status' => $report->getWellbeingEmoji() . ' ' . ($report->wellbeing_status ?? 'N/A'),
                 'needs_support' => $report->needs_support ? '<span class="badge bg-warning">Yes</span>' : '<span class="badge bg-secondary">No</span>',
@@ -262,51 +266,21 @@ class SecondmentWeeklyReportController extends Controller
      */
     public function export(Request $request)
     {
-        $event_id = $request->input('event_id');
-        $venue_id = $request->input('venue_id');
-        $status = $request->input('status');
+        Log::info('Exporting Secondment Weekly Reports (Admin) for user: ' . Auth::user()->name);
+        Log::info($request->all());
 
-        $query = SecondmentWeeklyReport::with(['event', 'venue', 'user']);
-
-        if ($event_id) {
-            $query->where('event_id', $event_id);
-        }
-
-        if ($venue_id) {
-            $query->where('venue_id', $venue_id);
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        $reports = $query->get();
-
-        // You would typically use a library like maatwebsite/excel here
-        // For now, returning a CSV-like JSON structure
-        $filename = 'SWR_Export_' . now()->format('Ymd_His') . '.csv';
-
-        $csv = "Report ID,Name,Venue,Event,Reporting Week,Wellbeing,Status,Photos,Submitted At\n";
-        foreach ($reports as $report) {
-            $csv .= implode(',', [
-                $report->id,
-                '"' . $report->user?->name . '"',
-                '"' . $report->venue?->title . '"',
-                '"' . $report->event?->name . '"',
-                $report->reporting_week,
-                $report->wellbeing_status,
-                $report->status,
-                $report->documents->count(),
-                $report->created_at->format('Y-m-d H:i'),
-            ]) . "\n";
-        }
-
-        return response()->streamDownload(function () use ($csv) {
-            echo $csv;
-        }, $filename, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        $filters = $request->only([
+            'export_event_filter',
+            'export_venue_filter',
+            'export_date_range_filter',
         ]);
+
+        Log::info('Filters applied: ' . json_encode($filters));
+
+        return Excel::download(
+            new SecondmentWeeklyReportExport($filters), 
+            'secondment_weekly_reports_' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 
     /**

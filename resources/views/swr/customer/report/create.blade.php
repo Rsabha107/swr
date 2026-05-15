@@ -112,16 +112,6 @@
             <a href="{{ route('swr.report') }}"><button class="btn btn-subtle-primary px-3 px-sm-5 me-2"><span class="fa-solid fa-arrow-left me-sm-2"></span><span class="d-none d-sm-inline">Back</span></button></a>
         </div>
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <form id="swrForm" class="report-form needs-validation" action="{{ route('swr.report.store') }}" method="POST" enctype="multipart/form-data" novalidate>
             @csrf
 
@@ -131,15 +121,15 @@
                 <div class="form-row">
 
                     <x-formy.form_date_input class="col-sm-12 col-md-12  mb-3" inputType="text" floating='0'
-                            inputValue="" classLabel='mb-1' name="reporting_week" elementId="reporting_week" label="Reporting Week"
+                            inputValue="" classLabel='mb-1' name="reporting_week" elementId="reporting_week" label="Reporting Day"
                             required="required" disabled="" inputValue="{{ old('reporting_week') }}"/>
 
                     <x-formy.floating-select class="col-sm-12 col-md-12  mb-3" id="venue_id" floating='0'
                             name="venue_id" classLabel='mb-1' :options="$venues" label="Venue" required="required" multiple='0'
-                            selectedValue="title" itemIdForeach="id" itemTitleForeach="title" inputValue="{{ old('venue_id') }}" />
-                    <x-formy.form_input class="col-sm-12 col-md-12 mb-3" inputType="text" floating='0' inputValue="{{ old('city') }}"
+                            selectedValue="title" itemIdForeach="id" itemTitleForeach="title" inputValue="{{ $defaultVenueId ?? old('venue_id') }}" />
+                    {{-- <x-formy.form_input class="col-sm-12 col-md-12 mb-3" inputType="text" floating='0' inputValue="{{ old('city') }}"
                             classLabel='mb-1' name="city" elementId="city" inputAttributes=""
-                            label="City" inputPlaceholder="City" required="required" disabled=''/>
+                            label="City" inputPlaceholder="City" required="required" disabled=''/> --}}
                 </div>
 
                 <div class="form-row">
@@ -158,7 +148,7 @@
                             label="Name" inputPlaceholder="name"
                             inputAttributes="min=0" required="required" disabled='' />
 
-                    <x-formy.form_input class="col-sm-12 col-md-12 mb-3" inputType="text" floating='0' inputValue="{{ old('role') }}"
+                    <x-formy.form_input class="col-sm-12 col-md-12 mb-3" inputType="text" floating='0' inputValue="{{ old('role', $user->phone) }}"
                             classLabel='mb-1' name="role" elementId="role" inputAttributes=""
                             label="Role" inputPlaceholder="Enter your role" required="required" disabled=''/>
                 </div>
@@ -199,10 +189,10 @@
                 <div class="form-group">
                     <label class="mb-1">Functional Area(s) impacted (Multi-select)</label>
                     <div class="checkbox-grid">
-                        @foreach($functionalAreas as $key => $area)
+                        @foreach($functionalAreas->sortBy(function($area) { return strtolower($area->fa_code) === 'oth' ? 1 : 0; }) as $key => $area)
                             <div class="checkbox-group">
                                 <input class="innovation-area-check" type="checkbox" id="innovation_area_{{ $area->id }}" name="innovation_functional_areas[]" value="{{ $area->id }}" {{ in_array($area->id, old('innovation_functional_areas', [])) ? 'checked' : '' }} @if(strtolower($area->fa_code) === 'oth') data-other="true" @endif>
-                                <label for="innovation_area_{{ $area->id }}">{{ $area->fa_code }}</label>
+                                <label for="innovation_area_{{ $area->id }}">{{ strtoupper($area->fa_code) === 'OTH' ? 'OTHER' : $area->fa_code }}</label>
                             </div>
                         @endforeach
                     </div>
@@ -242,10 +232,10 @@
                 <div class="form-group">
                     <label class="mb-1">Functional Area(s) impacted (Multi-select)</label>
                     <div class="checkbox-grid">
-                        @foreach($functionalAreas as $key => $area)
+                        @foreach($functionalAreas->sortBy(function($area) { return strtolower($area->fa_code) === 'oth' ? 1 : 0; }) as $key => $area)
                             <div class="checkbox-group">
                                 <input class="challenges-area-check" type="checkbox" id="challenges_area_{{ $area->id }}" name="challenges_functional_areas[]" value="{{ $area->id }}" {{ in_array($area->id, old('challenges_functional_areas', [])) ? 'checked' : '' }} @if(strtolower($area->fa_code) === 'oth') data-other="true" @endif>
-                                <label for="challenges_area_{{ $area->id }}">{{ $area->fa_code }}</label>
+                                <label for="challenges_area_{{ $area->id }}">{{ strtoupper($area->fa_code) === 'OTH' ? 'OTHER' : $area->fa_code }}</label>
                             </div>
                         @endforeach
                     </div>
@@ -259,7 +249,7 @@
                 </div>
             </div>
 
-                {{-- <div id="challenges_other_container" style="display:none;">
+                {{-- <div id="challenges_other_area" style="display:none;">
                     <div class="mb-3">
                         <label class="mb-1" for="challenges_other_area">Please specify other area</label>
                         <input type="text" class="form-control" id="challenges_other_area" name="challenges_other_area" value="{{ old('challenges_other_area') }}">
@@ -407,6 +397,23 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Display Laravel validation errors as toastr
+    @if ($errors->any())
+        if (typeof toastr !== 'undefined') {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "8000",
+                "extendedTimeOut": "3000"
+            };
+            
+            @foreach ($errors->all() as $error)
+                toastr.error("{{ $error }}", "Validation Error");
+            @endforeach
+        }
+    @endif
+
     // Cancel button
     document.getElementById('cancelReport').addEventListener('click', function() {
         window.location.href = '{{ route('swr.report') }}';
@@ -461,8 +468,110 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('support_types_container').style.display = 'block';
     }
 
-    // Log form submission
-    document.getElementById('swrForm').addEventListener('submit', function(e) {
+    // Trigger initial display for innovation other field
+    const innovationOther = document.querySelector('.innovation-area-check[data-other="true"]:checked');
+    if (innovationOther) {
+        document.getElementById('innovation_other_container').style.display = 'block';
+    }
+
+    // Trigger initial display for challenges other field
+    const challengesOther = document.querySelector('.challenges-area-check[data-other="true"]:checked');
+    if (challengesOther) {
+        document.getElementById('challenges_other_container').style.display = 'block';
+    }
+
+    // Prevent double submission
+    const form = document.getElementById('swrForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnContent = submitBtn.innerHTML;
+
+    form.addEventListener('submit', function(e) {
+        // Prevent multiple submissions
+        if (submitBtn.disabled) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Check HTML5 validation
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            
+            // Find all invalid fields
+            const invalidFields = form.querySelectorAll(':invalid');
+            const fieldNames = [];
+            
+            invalidFields.forEach(field => {
+                // Get the label text for the field
+                let label = '';
+                
+                // Check if field is a radio button or checkbox in a group
+                const isRadio = field.type === 'radio';
+                const isCheckbox = field.type === 'checkbox';
+                
+                if (isRadio || isCheckbox) {
+                    // For radio/checkbox, get the parent form-group's main label (the question)
+                    const parentGroup = field.closest('.form-group, .mb-3');
+                    if (parentGroup) {
+                        // Get all labels in the parent group
+                        const labels = parentGroup.querySelectorAll('label');
+                        // Find the main label (not inside radio-item or checkbox-group)
+                        for (let lbl of labels) {
+                            if (!lbl.closest('.radio-item') && !lbl.closest('.checkbox-group')) {
+                                label = lbl.textContent.replace('*', '').trim();
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    // For other fields, get the direct label
+                    if (field.id) {
+                        const labelElement = form.querySelector(`label[for="${field.id}"]`);
+                        if (labelElement) {
+                            label = labelElement.textContent.replace('*', '').trim();
+                        }
+                    }
+                    
+                    // If no label found, try to get from parent structure
+                    if (!label) {
+                        const parentLabel = field.closest('.mb-3, .form-group')?.querySelector('label');
+                        if (parentLabel) {
+                            label = parentLabel.textContent.replace('*', '').trim();
+                        }
+                    }
+                }
+                
+                // Fallback to field name
+                if (!label) {
+                    label = field.name || field.id || 'Field';
+                }
+                
+                if (label && !fieldNames.includes(label)) {
+                    fieldNames.push(label);
+                }
+            });
+            
+            // Show toastr with required fields
+            if (fieldNames.length > 0 && typeof toastr !== 'undefined') {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "2000"
+                };
+                
+                const message = `Please fill in the following required fields:<br><br>• ${fieldNames.join('<br>• ')}`;
+                toastr.error(message, 'Validation Error');
+            }
+            
+            return false;
+        }
+
+        // Disable button and show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+        
+        // Log form submission
         const formData = new FormData(this);
         const innovationAreas = formData.getAll('innovation_functional_areas[]');
         const challengeAreas = formData.getAll('challenges_functional_areas[]');
